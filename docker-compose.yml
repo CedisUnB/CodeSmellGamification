@@ -1,0 +1,22 @@
+services:
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    environment:
+      DATABASE_URL: postgresql://appuser:1234@host.docker.internal:5432/appdb
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  web:
+    build: ./web
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    volumes:
+      - ./web:/app
+      - /app/node_modules

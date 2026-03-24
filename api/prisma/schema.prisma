@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  password     String
+  displayName  String
+  coins        Int       @default(0)
+
+  attempts     Attempt[]
+}
+
+model Exercise {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String
+  code         String
+
+  smellLines   SmellLine[]
+  attempts     Attempt[]
+  anonAttempts AnonymousAttempt[]
+}
+
+model SmellLine {
+  id         Int      @id @default(autoincrement())
+  exerciseId Int
+  smellType  String
+  line       Int
+
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model Attempt {
+  id            Int      @id @default(autoincrement())
+  submittedAt   DateTime @default(now())
+  userId        Int
+  exerciseId    Int
+  correctLines  Int?
+  correctSmells Int?
+
+  user     User     @relation(fields: [userId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model AnonymousSession {
+  id        Int      @id @default(autoincrement())
+  coins     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  attempts  AnonymousAttempt[]
+}
+
+model AnonymousAttempt {
+  id                  Int      @id @default(autoincrement())
+  submittedAt         DateTime @default(now())
+  anonymousSessionId  Int
+  exerciseId          Int
+  correctLines        Int?
+  correctSmells       Int?
+
+  session  AnonymousSession @relation(fields: [anonymousSessionId], references: [id])
+  exercise Exercise         @relation(fields: [exerciseId], references: [id])
+}

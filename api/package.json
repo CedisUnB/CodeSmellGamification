@@ -1,0 +1,26 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "API do site DevDog desenvolvido por Luciano Ricardo da Silva Junior como Trabalho de Conclusão de Curso na Universidade de Brasilia.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/server.js"
+  },
+  "author": "Luciano Ricardo",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.21.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "prisma": "^5.21.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
