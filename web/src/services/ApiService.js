@@ -17,5 +17,6 @@ export const ApiService = (token) => {
         login: (user) => api.post('/login', user),
         findUsers: () => api.get('/user'),
         findUserById: (id) => api.get(`/user/${id}`),
+        findExercises: () => api.get('/exercise'),
     };
 };

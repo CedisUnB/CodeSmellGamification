@@ -2,7 +2,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaPaw, FaUserCircle, FaCoins, FaHome, FaSearch, FaGraduationCap } from "react-icons/fa";
 import { AuthContext } from "../contexts/AuthContext";
-import { ApiService } from "../services/ApiServices";
+import { ApiService } from "../services/ApiService";
 import { useContext, useEffect, useState } from "react";
 
 export default function Navbar() {
