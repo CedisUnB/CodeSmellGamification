@@ -1,12 +1,10 @@
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
+/* * {
   box-sizing: border-box;
   overflow-x: hidden;
-  /* outline: 1px solid red; */
-}
+  outline: 1px solid red;
+} */
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
