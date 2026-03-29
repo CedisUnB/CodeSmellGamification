@@ -13,6 +13,8 @@ export default function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/farejador" element={<Farejador />} />
                     <Route path="/guia" element={<Guia />} />
+                    {/* <Route path="/login" element={<Login />} /> */}
+                    {/* <Route path="/register" element={<Register />} /> */}
                 </Routes>
             </Layout>
         </Router>
