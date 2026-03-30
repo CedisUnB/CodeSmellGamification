@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaPaw, FaUserCircle, FaCoins, FaHome, FaSearch, FaGraduationCap } from "react-icons/fa";
 import { AuthContext } from "../contexts/AuthContext";
@@ -44,7 +43,7 @@ export default function Navbar() {
             className="flex items-center space-x-2 cursor-pointer group "
             onClick={() => navigate("/")}
           >
-            <FaPaw className="text-orange-500 dark:text-orange-400 group-hover:scale-110 transition-transform duration-300" size={28} />
+            <FaPaw className="text-orange-500 dark:text-orange-500 group-hover:scale-110 transition-transform duration-300" size={28} />
             <span className="text-2xl font-bold bg-linear-to-r from-orange-500 to-red-500 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
               DevDog
             </span>

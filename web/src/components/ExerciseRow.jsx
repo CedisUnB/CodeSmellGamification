@@ -1,4 +1,3 @@
-// src/components/ExerciseRow.jsx
 import { useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaCircle, FaStar } from 'react-icons/fa';
 

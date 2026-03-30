@@ -1,4 +1,3 @@
-// src/pages/Farejador.jsx
 import { useContext, useEffect, useState } from 'react';
 import { ApiService } from '../services/ApiService';
 import { AuthContext } from '../contexts/AuthContext';

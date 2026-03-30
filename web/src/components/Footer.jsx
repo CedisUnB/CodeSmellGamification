@@ -20,12 +20,6 @@ export default function Footer() {
             label: "GitHub",
             color: "hover:text-neutral-900 dark:hover:text-white"
         },
-        {
-            icon: FaInstagram,
-            href: "https://instagram.com/_lricardo",
-            label: "Instagram",
-            color: "hover:text-pink-600"
-        }
     ];
 
     return (
@@ -38,7 +32,7 @@ export default function Footer() {
                         className="flex items-center space-x-2 cursor-pointer group mb-4 md:mb-0"
                         onClick={() => navigate("/")}
                     >
-                        <FaPaw className="mr-4 text-orange-500 dark:text-orange-400 group-hover:scale-110 transition-transform duration-300" size={28} />
+                        <FaPaw className="mr-4 text-orange-500 dark:text-orange-500 group-hover:scale-110 transition-transform duration-300" size={28} />
                         <span className="text-2xl font-bold bg-linear-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                             DevDog
                         </span>
