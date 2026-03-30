@@ -8,11 +8,11 @@ export default function Layout({ children }) {
     const layoutVisible = !hiddenPaths.includes(location.pathname);
 
     return (
-        <div className="w-screen min-h-screen bg-amber-50 dark:bg-neutral-800 dark:text-white">
+        <div className="w-screen min-h-screen bg-linear-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800">
             {layoutVisible && <Navbar />}
             <main
                 className={`${layoutVisible
-                    ? "container mx-auto w-full min-h-screen pt-16"
+                    ? "container mx-auto w-full min-h-screen md:pt-16 pt-32"
                     : "flex items-center justify-center min-h-screen"
                     }`}
             >
