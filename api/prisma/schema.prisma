@@ -21,7 +21,7 @@ model Exercise {
   id           Int          @id @default(autoincrement())
   title        String
   description  String
-  difficulty   String
+  difficulty   Difficulty
   code         String
 
   smellLines   SmellLine[]
@@ -32,7 +32,7 @@ model Exercise {
 model SmellLine {
   id         Int      @id @default(autoincrement())
   exerciseId Int
-  smellType  String
+  smellType  SmellType
   line       Int
 
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
@@ -68,4 +68,18 @@ model AnonymousAttempt {
 
   session  AnonymousSession @relation(fields: [anonymousSessionId], references: [id])
   exercise Exercise         @relation(fields: [exerciseId], references: [id])
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum SmellType {
+  LONG_METHOD
+  LARGE_CLASS
+  FEATURE_ENVY
+  DATA_CLUMPS
+  SHOTGUN_SURGERY
 }

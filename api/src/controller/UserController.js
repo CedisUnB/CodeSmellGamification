@@ -4,7 +4,8 @@ const prisma = new PrismaClient()
 class UserController {
 
   async getUserById(request, response) {
-    const { id } = request.params;
+    let { id } = request.params;
+    id = parseInt(id); // TODO: Remover depois que comecar a usar uuid
     try {
       const user = await prisma.user.findUnique({
         select: {
