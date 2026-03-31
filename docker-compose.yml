@@ -1,22 +1,72 @@
+name: code-smell-gamification-dev
+
 services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-code_smell_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env.development
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["npx", "prisma", "migrate", "deploy"]
+    restart: "no"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+
   api:
-    build: ./api
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     ports:
       - "3000:3000"
     volumes:
       - ./api:/app
       - /app/node_modules
     environment:
-      DATABASE_URL: postgresql://appuser:1234@host.docker.internal:5432/appdb
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - NODE_ENV=development
 
   web:
-    build: ./web
-    ports:
-      - "5173:5173"
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
     depends_on:
       - api
+    ports:
+      - "5173:5173"
     volumes:
       - ./web:/app
       - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3000
+
+volumes:
+  postgres_data_dev:

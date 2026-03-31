@@ -3,14 +3,50 @@ const prisma = new PrismaClient()
 
 class UserController {
 
-  async getMe(req, res) {
-    const { id } = req.user
+  async getUserById(request, response) {
+    let { id } = request.params;
+    id = parseInt(id); // TODO: Remover depois que comecar a usar uuid
+    try {
+      const user = await prisma.user.findUnique({
+        select: {
+          id: true,
+          displayName: true,
+          email: true,
+          coins: true,
+        },
+        where: { id }
+      });
+      return response.status(200).json(user);
+    } catch (error) {
+      return response.status(500).json({ error: error.message });
+    }
+  }
 
-    const user = await prisma.user.findUnique({
-      where: { id }
-    })
 
-    return res.json(user)
+  async addUser(request, response) {
+    const { displayName, email, password } = request.body;
+
+    const newData = {
+      displayName,
+      email, 
+      password, // TODO: Criptografar senha
+      // ...(password && { password: await bcrypt.hash(password, 10) }),
+    };
+
+    try {
+      const user = await prisma.user.create({
+        data: newData,
+        select: {
+          id: true,
+          displayName: true,
+          email: true,
+          coins: true,
+        },
+      });
+      return response.status(200).json(user);
+    } catch (error) {
+      return response.status(500).json({ error: error.message });
+    }
   }
 
 }

@@ -17,7 +17,8 @@ const attempt = new AttemptController()
 router.post('/login', login.login)
 
 // User
-router.get('/me', verifyAuth, user.getMe)
+router.post('/user', user.addUser)
+router.get('/user/:id', verifyAuth, user.getUserById) // TODO: Somente o próprio usuário ou admin
 
 // Exercise
 // router.post('/exercise', verifyAuth, exercise.create) // TODO: Somente admin, colocar no banco direto?
