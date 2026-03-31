@@ -13,29 +13,9 @@ export default function FarejadorList() {
     const [selectedDifficulty, setSelectedDifficulty] = useState('todos');
 
     useEffect(() => {
-        // const { findExercises } = ApiService(token);// todo: descomentar quando a rota estiver pronta
+        const { findExercises } = ApiService(token);
         const fetchExercises = async () => {
-            // const { data } = await findExercises(); // todo: descomentar quando a rota estiver pronta
-            const data = [
-                { id: 32, title: "Exercício Recomendado", difficulty: "facil", completed: false, recommended: true },
-                { id: 64, title: "Exercício Lorem Ipsum", difficulty: "facil", completed: false, recommended: false },
-                { id: 27, title: "Processa Preço Pedido", difficulty: "dificil", completed: false, recommended: false },
-                { id: 3, title: "Exercício Lorem Ipsum", difficulty: "medio", completed: false, recommended: true },
-                { id: 1, title: "Exercício Lorem Ipsum", difficulty: "facil", completed: true, recommended: false },
-                { id: 2, title: "Exercício Lorem Ipsum", difficulty: "medio", completed: true, recommended: false },
-                { id: 4, title: "Exercício Lorem Ipsum", difficulty: "dificil", completed: true, recommended: false },
-                { id: 5, title: "Exercício Lorem Ipsum", difficulty: "facil", completed: false, recommended: false },
-                { id: 6, title: "Exercício Lorem Ipsum", difficulty: "medio", completed: false, recommended: false },
-                { id: 7, title: "Exercício Lorem Ipsum", difficulty: "dificil", completed: false, recommended: false },
-                { id: 8, title: "Exercício Lorem Ipsum", difficulty: "facil", completed: false, recommended: false },
-                { id: 9, title: "Exercício Lorem Ipsum", difficulty: "medio", completed: false, recommended: false },
-                { id: 10, title: "Exercício Lorem Ipsum", difficulty: "dificil", completed: false, recommended: false },
-                { id: 11, title: "Exercício Lorem Ipsum", difficulty: "facil", completed: false, recommended: false },
-                { id: 12, title: "Exercício Lorem Ipsum", difficulty: "medio", completed: false, recommended: false },
-                { id: 13, title: "Exercício Lorem Ipsum", difficulty: "dificil", completed: false, recommended: false },
-                { id: 14, title: "Exercício Lorem Ipsum", difficulty: "facil", completed: false, recommended: false },
-                { id: 15, title: "Exercício Lorem Ipsum", difficulty: "medio", completed: false, recommended: false },
-            ];
+            const { data } = await findExercises();
             setExercises(data);
         };
 

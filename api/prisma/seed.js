@@ -4,6 +4,10 @@ const prisma = new PrismaClient()
 
 async function main() {
 
+  await prisma.user.deleteMany();
+  await prisma.exercise.deleteMany();
+  await prisma.attempt.deleteMany();
+
   // Usuários
   const user = await prisma.user.create({
     data: {
@@ -19,6 +23,7 @@ async function main() {
     data: {
       title: "Long Method",
       description: "Identifique linhas com método muito longo",
+      difficulty: "facil",
       code: `
 function calcular() {
   let soma = 0;
@@ -46,6 +51,7 @@ function calcular() {
     data: {
       title: "Duplicated Code",
       description: "Identifique código duplicado",
+      difficulty: "dificil",
       code: `
 function a() {
   console.log("oi");
@@ -61,32 +67,6 @@ function b() {
           { line: 6, smellType: "Duplicated Code" }
         ]
       }
-    }
-  })
-
-  // Tentativa
-  await prisma.attempt.create({
-    data: {
-      userId: user.id,
-      exerciseId: exercise1.id,
-      correctLines: 2,
-      correctSmells: 2
-    }
-  })
-
-  // Sessão anônima
-  const session = await prisma.anonymousSession.create({
-    data: {
-      coins: 10
-    }
-  })
-
-  await prisma.anonymousAttempt.create({
-    data: {
-      anonymousSessionId: session.id,
-      exerciseId: exercise2.id,
-      correctLines: 1,
-      correctSmells: 1
     }
   })
 

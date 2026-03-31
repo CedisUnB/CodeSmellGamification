@@ -9,7 +9,7 @@ export default function Navbar() {
   const location = useLocation();
   const [user, setUser] = useState({});
 
-  const { userId, token } = useContext(AuthContext);
+  const { userId, token, logout } = useContext(AuthContext);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -18,6 +18,7 @@ export default function Navbar() {
       const getLoggedUser = async () => {
         const { data } = await findUserById(userId);
         setUser(data);
+        console.log(data);
       };
       getLoggedUser();
     }
@@ -106,8 +107,8 @@ export default function Navbar() {
                       </div>
                       <button
                         onClick={() => {
-                          // Lógica de logout
-                          console.log("Logout"); //TODO: Fazer logout
+                          logout();
+                          navigate("/");
                           setIsUserMenuOpen(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"

@@ -19,8 +19,9 @@ class LoginController {
                 return response.status(404).json({ error: 'Usuário não encontrado' })
             }
 
-            const match = await string.compare(password, user.password)
-            if (match) {
+            // const match = await bcrypt.compare(password, user.password)
+            const match = password === user.password // TODO: Criptogtafar a senha e comparar
+            if (!match) {
                 return response.status(401).json({ error: 'Senha invalida' })
             }
 

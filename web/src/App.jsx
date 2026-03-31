@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import Guia from './pages/Guia';
 import FarejadorList from './pages/FarejadorList';
 import Farejador from './pages/Farejador';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 export default function App() {
     return (
@@ -15,8 +17,8 @@ export default function App() {
                     <Route path="/farejador" element={<FarejadorList />} />
                     <Route path="/farejador/:id" element={<Farejador />} />
                     <Route path="/guia" element={<Guia />} />
-                    {/* <Route path="/login" element={<Login />} /> */}
-                    {/* <Route path="/register" element={<Register />} /> */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
                 </Routes>
             </Layout>
         </Router>
