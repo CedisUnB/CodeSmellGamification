@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 import { ApiService } from '../services/ApiService';
 import { AuthContext } from '../contexts/AuthContext';
-import { FaSearch, FaPaw } from 'react-icons/fa';
+import { FaPaw } from 'react-icons/fa';
 import DevDog from '../assets/sentado.svg';
 import SpeechBubble from '../components/SpeechBubble';
 import ExerciseRow from '../components/ExerciseRow';
+import SearchAndFilter from '../components/SearchAndFilter';
 
 export default function FarejadorList() {
     const { token } = useContext(AuthContext);
@@ -33,6 +34,21 @@ export default function FarejadorList() {
     const recommendedExercises = filteredExercises.filter(ex => ex.recommended);
     const regularExercises = filteredExercises.filter(ex => !ex.recommended);
 
+    const difficultyOptions = ['todos', 'facil', 'medio', 'dificil'];
+
+    const difficultyLabels = {
+        todos: 'Todos',
+        facil: 'Fácil',
+        medio: 'Médio',
+        dificil: 'Difícil'
+    };
+
+    const difficultyColors = {
+        facil: 'bg-green-500 text-white shadow-md',
+        medio: 'bg-yellow-500 text-white shadow-md',
+        dificil: 'bg-red-500 text-white shadow-md'
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             {/* Titulo */}
@@ -46,58 +62,17 @@ export default function FarejadorList() {
             </div>
 
             {/* Barra de Pesquisa e Filtros */}
-            <div className="mb-6 sm:mb-8 space-y-4">
-                <div className="relative">
-                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 text-sm sm:text-base" />
-                    <input
-                        type="text"
-                        placeholder="Pesquisar exercício por nome ou número..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                    />
-                </div>
-
-                {/* Filtros de dificuldade */}
-                <div className="flex gap-2 flex-nowrap sm:flex-wrap overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0">
-                    <button
-                        onClick={() => setSelectedDifficulty('todos')}
-                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base whitespace-nowrap ${selectedDifficulty === 'todos'
-                            ? 'bg-orange-500 text-white shadow-md'
-                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-                            }`}
-                    >
-                        Todos
-                    </button>
-                    <button
-                        onClick={() => setSelectedDifficulty('facil')}
-                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base whitespace-nowrap ${selectedDifficulty === 'facil'
-                            ? 'bg-green-500 text-white shadow-md'
-                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-                            }`}
-                    >
-                        Fácil
-                    </button>
-                    <button
-                        onClick={() => setSelectedDifficulty('medio')}
-                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base whitespace-nowrap ${selectedDifficulty === 'medio'
-                            ? 'bg-yellow-500 text-white shadow-md'
-                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-                            }`}
-                    >
-                        Médio
-                    </button>
-                    <button
-                        onClick={() => setSelectedDifficulty('dificil')}
-                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base whitespace-nowrap ${selectedDifficulty === 'dificil'
-                            ? 'bg-red-500 text-white shadow-md'
-                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-                            }`}
-                    >
-                        Difícil
-                    </button>
-                </div>
-            </div>
+            <SearchAndFilter
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                searchPlaceholder="Pesquisar exercício por nome ou número..."
+                filterKey="difficulty"
+                selectedFilter={selectedDifficulty}
+                onFilterChange={setSelectedDifficulty}
+                filterOptions={difficultyOptions}
+                filterLabels={difficultyLabels}
+                filterColors={difficultyColors}
+            />
 
             <div className="flex flex-col-reverse lg:flex-row gap-6 lg:gap-8">
                 {/* Mensagem do DevDog */}
