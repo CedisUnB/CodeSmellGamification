@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ApiService } from '../services/ApiService';
 import { AuthContext } from '../contexts/AuthContext';
 import { FaPaw } from 'react-icons/fa';
@@ -10,19 +11,39 @@ import SearchAndFilter from '../components/SearchAndFilter';
 export default function FarejadorList() {
     const { token } = useContext(AuthContext);
     const [exercises, setExercises] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedDifficulty, setSelectedDifficulty] = useState('todos');
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const [selectedDifficulty, setSelectedDifficulty] = useState(
+        searchParams.get('dificuldade') || 'todos'
+    );
 
     useEffect(() => {
         const { findExercises } = ApiService(token);
         const fetchExercises = async () => {
-            const { data } = await findExercises();
-            setExercises(data);
+            setLoading(true);
+            try {
+                const { data } = await findExercises();
+                setExercises(data);
+            } catch (error) {
+                console.error('Erro ao carregar exercícios:', error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchExercises();
     }, [token]);
 
+    const handleDifficultyChange = (difficulty) => {
+        setSelectedDifficulty(difficulty);
+        if (difficulty === 'todos') {
+            setSearchParams({});
+        } else {
+            setSearchParams({ dificuldade: difficulty });
+        }
+    };
 
     const filteredExercises = exercises.filter(exercise => {
         const matchesSearch = exercise.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -66,9 +87,8 @@ export default function FarejadorList() {
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
                 searchPlaceholder="Pesquisar exercício por nome ou número..."
-                filterKey="difficulty"
                 selectedFilter={selectedDifficulty}
-                onFilterChange={setSelectedDifficulty}
+                onFilterChange={handleDifficultyChange}
                 filterOptions={difficultyOptions}
                 filterLabels={difficultyLabels}
                 filterColors={difficultyColors}
@@ -95,49 +115,56 @@ export default function FarejadorList() {
 
                 {/* Tabela de Exercícios */}
                 <div className="lg:w-2/3 xl:w-3/4 bg-white dark:bg-neutral-800 rounded-2xl shadow-xl overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full min-w-125 sm:min-w-0">
-                            <thead className="bg-linear-to-r from-orange-500 to-red-500">
-                                <tr>
-                                    <th className="w-16 sm:w-20 px-3 sm:px-6 py-3 sm:py-4 text-center text-white font-semibold text-sm sm:text-base">
-                                        Status
-                                    </th>
-                                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white font-semibold text-sm sm:text-base">
-                                        Exercício
-                                    </th>
-                                    <th className="w-20 sm:w-24 px-3 sm:px-6 py-3 sm:py-4 text-center text-white font-semibold text-sm sm:text-base">
-                                        Nível
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-                                {/* Exercícios Recomendados */}
-                                {recommendedExercises.map((exercise) => (
-                                    <ExerciseRow
-                                        key={exercise.id}
-                                        exercise={exercise}
-                                    />
-                                ))}
-                                {/* Outros Exercícios */}
-                                {regularExercises.map((exercise) => (
-                                    <ExerciseRow
-                                        key={exercise.id}
-                                        exercise={exercise}
-                                    />
-                                ))}
-                                {/* Sem resultados */}
-                                {filteredExercises.length === 0 && (
+                    {loading ? (
+                        <div className="flex justify-center items-center py-20">
+                            <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent"></div>
+                            <p className="ml-3 text-neutral-500">Carregando exercícios...</p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-125 sm:min-w-0">
+                                <thead className="bg-linear-to-r from-orange-500 to-red-500">
                                     <tr>
-                                        <td colSpan="3" className="px-3 sm:px-6 py-8 sm:py-12 text-center text-neutral-500 dark:text-neutral-400">
-                                            <FaPaw className="mx-auto text-3xl sm:text-4xl mb-2 opacity-50" />
-                                            <p className="text-sm sm:text-base">Nenhum exercício encontrado</p>
-                                            <p className="text-xs sm:text-sm">Tente ajustar sua pesquisa ou filtros</p>
-                                        </td>
+                                        <th className="w-16 sm:w-20 px-3 sm:px-6 py-3 sm:py-4 text-center text-white font-semibold text-sm sm:text-base">
+                                            Status
+                                        </th>
+                                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white font-semibold text-sm sm:text-base">
+                                            Exercício
+                                        </th>
+                                        <th className="w-20 sm:w-24 px-3 sm:px-6 py-3 sm:py-4 text-center text-white font-semibold text-sm sm:text-base">
+                                            Nível
+                                        </th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
+                                    {/* Exercícios Recomendados */}
+                                    {recommendedExercises.map((exercise) => (
+                                        <ExerciseRow
+                                            key={exercise.id}
+                                            exercise={exercise}
+                                        />
+                                    ))}
+                                    {/* Outros Exercícios */}
+                                    {regularExercises.map((exercise) => (
+                                        <ExerciseRow
+                                            key={exercise.id}
+                                            exercise={exercise}
+                                        />
+                                    ))}
+                                    {/* Sem resultados */}
+                                    {filteredExercises.length === 0 && exercises.length > 0 && (
+                                        <tr>
+                                            <td colSpan="3" className="px-3 sm:px-6 py-8 sm:py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <FaPaw className="mx-auto text-3xl sm:text-4xl mb-2 opacity-50" />
+                                                <p className="text-sm sm:text-base">Nenhum exercício encontrado</p>
+                                                <p className="text-xs sm:text-sm">Tente ajustar sua pesquisa ou filtros</p>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
