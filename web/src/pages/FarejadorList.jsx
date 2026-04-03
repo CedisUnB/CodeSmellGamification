@@ -152,7 +152,7 @@ export default function FarejadorList() {
                                         />
                                     ))}
                                     {/* Sem resultados */}
-                                    {filteredExercises.length === 0 && exercises.length > 0 && (
+                                    {filteredExercises.length === 0 && (
                                         <tr>
                                             <td colSpan="3" className="px-3 sm:px-6 py-8 sm:py-12 text-center text-neutral-500 dark:text-neutral-400">
                                                 <FaPaw className="mx-auto text-3xl sm:text-4xl mb-2 opacity-50" />

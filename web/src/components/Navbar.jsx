@@ -1,8 +1,9 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaPaw, FaUserCircle, FaCoins, FaHome, FaSearch, FaGraduationCap } from "react-icons/fa";
+import { FaPaw, FaUserCircle, FaHome, FaSearch, FaGraduationCap } from "react-icons/fa";
 import { AuthContext } from "../contexts/AuthContext";
 import { ApiService } from "../services/ApiService";
 import { useContext, useEffect, useState } from "react";
+import PetiscoCounter from "./PetiscoCounter";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -70,13 +71,7 @@ export default function Navbar() {
           {/* Peticos e Usuário */}
           <div className="flex items-center space-x-4">
             {/* Petiscos */}
-            <div className="flex items-center space-x-2 bg-linear-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 px-3 py-1.5 rounded-full border border-yellow-200 dark:border-yellow-800">
-              <FaCoins className="text-yellow-500 dark:text-yellow-400" size={18} />
-              <span className="font-semibold text-neutral-700 dark:text-neutral-200">
-                {user.coins || 0}
-              </span>
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">petiscos</span>
-            </div>
+            <PetiscoCounter petiscos={user?.coins || 0} />
 
             {/* Usuário Logado //TODO: Fazer login*/}
             {userId ?
