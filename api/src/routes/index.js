@@ -23,6 +23,7 @@ router.get('/user/:id', verifyAuth, user.getUserById) // TODO: Somente o própri
 // Exercise
 // router.post('/exercise', verifyAuth, exercise.create) // TODO: Somente admin, colocar no banco direto?
 router.get('/exercise', exercise.list)
+router.get('/exercise/:id', exercise.getById)
 
 // Attempt
 router.post('/attempt', verifyAuth, attempt.create)

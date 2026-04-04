@@ -21,5 +21,6 @@ export const ApiService = (token) => {
         findUsers: () => api.get('/user'),
         findUserById: (id) => api.get(`/user/${id}`),
         findExercises: () => api.get('/exercise'),
+        findExerciseById: (id) => api.get(`/exercise/${id}`),
     };
 };

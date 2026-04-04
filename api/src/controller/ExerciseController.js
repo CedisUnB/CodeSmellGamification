@@ -18,5 +18,12 @@ class ExerciseController {
     return res.json(exercises)
   }
 
+  async getById(req, res) {
+    let { id } = req.params
+    id = parseInt(id)
+    const exercise = await prisma.exercise.findUnique({ where: { id } })
+    return res.json(exercise)
+  }
+
 }
 export { ExerciseController }

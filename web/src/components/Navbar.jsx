@@ -19,7 +19,6 @@ export default function Navbar() {
       const getLoggedUser = async () => {
         const { data } = await findUserById(userId);
         setUser(data);
-        console.log(data);
       };
       getLoggedUser();
     }
