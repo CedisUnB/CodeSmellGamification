@@ -26,7 +26,7 @@ export default function Register() {
         try {
             const { register: register } = ApiService(token);
             const response = await register({
-                displayName: data.name,
+                name: data.name,
                 email: data.email,
                 password: data.password
             });
