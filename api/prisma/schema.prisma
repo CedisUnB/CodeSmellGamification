@@ -8,66 +8,62 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
-  password     String
-  displayName  String
-  coins        Int       @default(0)
+  id          String   @id @default(uuid())
+  isAnonymous Boolean  @default(true)
+  name        String   @default("Anônimo")
+  email       String?  @unique
+  password    String?
+  coins       Int      @default(0)
+  createdAt   DateTime @default(now())
+  mergedToId  String?
+  updatedAt   DateTime @updatedAt
 
-  attempts     Attempt[]
+  attempts Attempt[]
+
+  @@index([email])
+  @@index([isAnonymous])
 }
 
 model Exercise {
-  id           Int          @id @default(autoincrement())
-  title        String
-  description  String
-  difficulty   Difficulty
-  code         String
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String
+  difficulty  Difficulty
+  code        String
 
-  smellLines   SmellLine[]
-  attempts     Attempt[]
-  anonAttempts AnonymousAttempt[]
+  smellLines SmellLine[]
+  attempts   Attempt[]
+
+  @@index([difficulty])
 }
 
 model SmellLine {
-  id         Int      @id @default(autoincrement())
+  id         String    @id @default(uuid())
   exerciseId Int
   smellType  SmellType
   line       Int
 
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([exerciseId, line]) // Uma linha não pode ter dois smells no mesmo exercício
+  @@index([exerciseId])
+  @@index([smellType])
 }
 
 model Attempt {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid())
   submittedAt   DateTime @default(now())
-  userId        Int
+  userId        String
   exerciseId    Int
-  correctLines  Int?
-  correctSmells Int?
+  correctLines  Int
+  correctSmells Int
+  attemptData   Json?
 
-  user     User     @relation(fields: [userId], references: [id])
-  exercise Exercise @relation(fields: [exerciseId], references: [id])
-}
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
 
-model AnonymousSession {
-  id        Int      @id @default(autoincrement())
-  coins     Int      @default(0)
-  createdAt DateTime @default(now())
-
-  attempts  AnonymousAttempt[]
-}
-
-model AnonymousAttempt {
-  id                  Int      @id @default(autoincrement())
-  submittedAt         DateTime @default(now())
-  anonymousSessionId  Int
-  exerciseId          Int
-  correctLines        Int?
-  correctSmells       Int?
-
-  session  AnonymousSession @relation(fields: [anonymousSessionId], references: [id])
-  exercise Exercise         @relation(fields: [exerciseId], references: [id])
+  @@index([userId])
+  @@index([exerciseId])
 }
 
 enum Difficulty {
@@ -77,9 +73,30 @@ enum Difficulty {
 }
 
 enum SmellType {
+  MYSTERIOUS_NAME
+  DUPLICATED_CODE
   LONG_METHOD
-  LARGE_CLASS
+  LONG_PARAMETER_LIST
+  GLOBAL_DATA
+  MUTABLE_DATA
+  DIVERGENT_CHANGE
+  SHOTGUN_SURGERY
   FEATURE_ENVY
   DATA_CLUMPS
-  SHOTGUN_SURGERY
+  PRIMITIVE_OBSESSION
+  REPEATED_SWITCHES
+  LAZY_ELEMENT
+  SPECULATIVE_GENERALITY
+  TEMPORARY_FIELD
+  MESSAGE_CHAINS
+  MIDDLE_MAN
+  LARGE_CLASS
+  COMMENTS
+}
+
+model Guide {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
