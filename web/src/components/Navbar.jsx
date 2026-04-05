@@ -1,28 +1,17 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaPaw, FaUserCircle, FaHome, FaSearch, FaGraduationCap } from "react-icons/fa";
-import { AuthContext } from "../contexts/AuthContext";
-import { ApiService } from "../services/ApiService";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import PetiscoCounter from "./PetiscoCounter";
+import { useAuth } from "../contexts/AuthContext";
+import { useUser } from "../contexts/UserContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState({});
 
-  const { userId, token, logout } = useContext(AuthContext);
+  const { token, logout } = useAuth();
+  const { user } = useUser();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (token) {
-      const { getMe } = ApiService(token);
-      const getLoggedUser = async () => {
-        const { data } = await getMe();
-        setUser(data);
-      };
-      getLoggedUser();
-    }
-  }, [token]);
 
   const navItems = [
     { path: '/', label: 'Início', icon: FaHome },
@@ -73,7 +62,7 @@ export default function Navbar() {
             <PetiscoCounter petiscos={user?.coins || 0} />
 
             {/* Usuário Logado //TODO: Fazer login*/}
-            {userId ?
+            {token ?
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}

@@ -1,14 +1,14 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { FaPaw, FaEnvelope, FaLock, FaSearch } from 'react-icons/fa';
 import { ApiService } from '../services/ApiService';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import DevDog from '../assets/sentado.svg';
 
 export default function Login() {
     const navigate = useNavigate();
-    const { token, sign } = useContext(AuthContext);
+    const { token, updateToken } = useAuth();
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [loginError, setLoginError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function Login() {
             const response = await login(data);
 
 
-            sign(response.data);
+            updateToken(response.data.token);
             navigate("/");
         } catch (error) {
             setLoginError(error.response?.data?.message || 'Email ou senha incorretos.');

@@ -1,11 +1,10 @@
-// src/pages/Register.jsx
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { FaPaw, FaEnvelope, FaLock, FaUser, FaArrowLeft, FaSearch } from 'react-icons/fa';
 import { ApiService } from '../services/ApiService';
 import DevDog from '../assets/sentado.svg';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -13,7 +12,7 @@ export default function Register() {
     const [registerError, setRegisterError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState(null);
-      const { token, sign } = useContext(AuthContext);
+    const { token, updateToken } = useAuth();
 
 
     const password = watch('password');
@@ -32,7 +31,7 @@ export default function Register() {
             });
 
             console.log('Registro bem sucedido:', response);
-            sign(response.data);
+            updateToken(response.data.token);
             navigate('/');
 
         } catch (error) {
