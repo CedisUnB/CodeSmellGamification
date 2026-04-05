@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaCircle, FaStar } from 'react-icons/fa';
+import { translate } from '../utils/enumTranslator';
 
 export default function ExerciseRow({ exercise }) {
     const navigate = useNavigate();
@@ -10,27 +11,14 @@ export default function ExerciseRow({ exercise }) {
 
     const getDifficultyColor = (difficulty) => {
         switch (difficulty) {
-            case 'facil':
+            case 'EASY':
                 return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
-            case 'medio':
+            case 'MEDIUM':
                 return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
-            case 'dificil':
+            case 'HARD':
                 return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
             default:
                 return 'text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-900/20';
-        }
-    };
-
-    const getDifficultyLabel = (difficulty) => {
-        switch (difficulty) {
-            case 'facil':
-                return 'Fácil';
-            case 'medio':
-                return 'Médio';
-            case 'dificil':
-                return 'Difícil';
-            default:
-                return difficulty;
         }
     };
 
@@ -41,7 +29,7 @@ export default function ExerciseRow({ exercise }) {
         >
             <td className="px-3 sm:px-6 py-3 sm:py-4 text-center">
                 <div className="flex justify-center">
-                    {exercise.completed ? (
+                    {exercise.hasAttempt ? (
                         <FaCheckCircle className="text-green-500 text-base sm:text-xl" />
                     ) : (
                         <FaCircle className="text-neutral-300 dark:text-neutral-600 text-base sm:text-xl" />
@@ -68,7 +56,7 @@ export default function ExerciseRow({ exercise }) {
             </td>
             <td className="px-3 sm:px-6 py-3 sm:py-4 text-center">
                 <span className={`inline-flex px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${getDifficultyColor(exercise.difficulty)}`}>
-                    {getDifficultyLabel(exercise.difficulty)}
+                    {translate(exercise.difficulty)}
                 </span>
             </td>
         </tr>

@@ -14,15 +14,15 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (userId) {
-      const { findUserById } = ApiService(token);
+    if (token) {
+      const { getMe } = ApiService(token);
       const getLoggedUser = async () => {
-        const { data } = await findUserById(userId);
+        const { data } = await getMe();
         setUser(data);
       };
       getLoggedUser();
     }
-  }, [userId, token]);
+  }, [token]);
 
   const navItems = [
     { path: '/', label: 'Início', icon: FaHome },
@@ -83,7 +83,7 @@ export default function Navbar() {
                     <FaUserCircle size={20} />
                   </div>
                   <span className="hidden sm:inline text-sm font-medium text-neutral-700 dark:text-neutral-200">
-                    {user.displayName}
+                    {user.name}
                   </span>
                 </button>
 
@@ -96,7 +96,7 @@ export default function Navbar() {
                     />
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg shadow-lg py-1 z-50 border border-neutral-200 dark:border-neutral-700">
                       <div className="px-4 py-2 border-b border-neutral-200 dark:border-neutral-700">
-                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{user.displayName}</p>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{user.name}</p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-400">{user.email}</p>
                       </div>
                       <button
