@@ -15,6 +15,7 @@ async function main() {
       name: "Ricardo",
       email: "a@b.com",
       password: "123",
+      isAnonymous: false,
       coins: 100
     }
   });
