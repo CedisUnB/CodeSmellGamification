@@ -6,6 +6,7 @@ import SearchAndFilter from '../../components/SearchAndFilter';
 import SpeechBubble from '../../components/SpeechBubble';
 import DevDog from '../../assets/sentado.svg';
 
+// TODO: Colocar artigos no banco e fazer get deles
 const guideModules = import.meta.glob('/src/content/*.md', {
     query: '?raw',
     import: 'default',

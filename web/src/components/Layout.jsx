@@ -8,7 +8,7 @@ export default function Layout({ children }) {
     const layoutVisible = !hiddenPaths.includes(location.pathname);
 
     return (
-        <div className="w-screen min-h-screen bg-linear-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800">
+        <div className="w-full min-h-screen bg-linear-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800">
             {layoutVisible && <Navbar />}
             <main
                 className={`${layoutVisible

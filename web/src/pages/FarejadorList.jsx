@@ -16,15 +16,15 @@ export default function FarejadorList() {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const [selectedDifficulty, setSelectedDifficulty] = useState(
-        searchParams.get('dificuldade') || 'todos'
+        searchParams.get('difficulty') || 'ALL'
     );
 
     useEffect(() => {
-        const { findExercises } = ApiService(token);
+        const { getExercises } = ApiService(token);
         const fetchExercises = async () => {
             setLoading(true);
             try {
-                const { data } = await findExercises();
+                const { data } = await getExercises();
                 setExercises(data);
             } catch (error) {
                 console.error('Erro ao carregar exercícios:', error);
@@ -38,36 +38,36 @@ export default function FarejadorList() {
 
     const handleDifficultyChange = (difficulty) => {
         setSelectedDifficulty(difficulty);
-        if (difficulty === 'todos') {
+        if (difficulty === 'ALL') {
             setSearchParams({});
         } else {
-            setSearchParams({ dificuldade: difficulty });
+            setSearchParams({ difficulty: difficulty });
         }
     };
 
     const filteredExercises = exercises.filter(exercise => {
         const matchesSearch = exercise.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             exercise.id.toString().includes(searchTerm);
-        const matchesDifficulty = selectedDifficulty === 'todos' || exercise.difficulty === selectedDifficulty;
+        const matchesDifficulty = selectedDifficulty === 'ALL' || exercise.difficulty === selectedDifficulty;
         return matchesSearch && matchesDifficulty;
     });
 
     const recommendedExercises = filteredExercises.filter(ex => ex.recommended);
     const regularExercises = filteredExercises.filter(ex => !ex.recommended);
 
-    const difficultyOptions = ['todos', 'facil', 'medio', 'dificil'];
+    const difficultyOptions = ['ALL', 'EASY', 'MEDIUM', 'HARD'];
 
     const difficultyLabels = {
-        todos: 'Todos',
-        facil: 'Fácil',
-        medio: 'Médio',
-        dificil: 'Difícil'
+        ALL: 'Todos',
+        EASY: 'Fácil',
+        MEDIUM: 'Médio',
+        HARD: 'Difícil'
     };
 
     const difficultyColors = {
-        facil: 'bg-green-500 text-white shadow-md',
-        medio: 'bg-yellow-500 text-white shadow-md',
-        dificil: 'bg-red-500 text-white shadow-md'
+        EASY: 'bg-green-500 text-white shadow-md',
+        MEDIUM: 'bg-yellow-500 text-white shadow-md',
+        HARD: 'bg-red-500 text-white shadow-md'
     };
 
     return (
@@ -152,7 +152,7 @@ export default function FarejadorList() {
                                         />
                                     ))}
                                     {/* Sem resultados */}
-                                    {filteredExercises.length === 0 && exercises.length > 0 && (
+                                    {filteredExercises.length === 0 && (
                                         <tr>
                                             <td colSpan="3" className="px-3 sm:px-6 py-8 sm:py-12 text-center text-neutral-500 dark:text-neutral-400">
                                                 <FaPaw className="mx-auto text-3xl sm:text-4xl mb-2 opacity-50" />

@@ -1,53 +1,60 @@
 import { PrismaClient } from '@prisma/client'
+
 const prisma = new PrismaClient()
 
 class UserController {
 
-  async getUserById(request, response) {
-    let { id } = request.params;
-    id = parseInt(id); // TODO: Remover depois que comecar a usar uuid
+  async getMe(req, res) {
+    const { id } = req.user;
+
     try {
       const user = await prisma.user.findUnique({
+        where: { id },
         select: {
           id: true,
-          displayName: true,
+          name: true,
           email: true,
           coins: true,
-        },
-        where: { id }
+          isAnonymous: true,
+        }
       });
-      return response.status(200).json(user);
+
+      if (!user) {
+        return res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+
+      return res.status(200).json(user);
     } catch (error) {
-      return response.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   }
 
-
-  async addUser(request, response) {
-    const { displayName, email, password } = request.body;
-
-    const newData = {
-      displayName,
-      email, 
-      password, // TODO: Criptografar senha
-      // ...(password && { password: await bcrypt.hash(password, 10) }),
-    };
+  async addCoins(req, res) {
+    const { id } = req.user
+    const { coins } = req.body
 
     try {
-      const user = await prisma.user.create({
-        data: newData,
-        select: {
-          id: true,
-          displayName: true,
-          email: true,
-          coins: true,
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data: {
+          coins: {
+            increment: coins
+          }
         },
-      });
-      return response.status(200).json(user);
+        select: {
+          coins: true,
+        }
+      })
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'Usuário nao encontrado' })
+      }
+
+      return res.status(200).json(updatedUser)
     } catch (error) {
-      return response.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message })
     }
   }
-
 }
+
 export { UserController }
