@@ -4,11 +4,13 @@ import { useForm } from 'react-hook-form';
 import { FaPaw, FaEnvelope, FaLock, FaSearch } from 'react-icons/fa';
 import { ApiService } from '../services/ApiService';
 import { useAuth } from '../contexts/AuthContext';
+import { useUser } from '../contexts/UserContext';
 import DevDog from '../assets/sentado.svg';
 
 export default function Login() {
     const navigate = useNavigate();
     const { token, updateToken } = useAuth();
+    const { refreshUser } = useUser(); 
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [loginError, setLoginError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -21,8 +23,8 @@ export default function Login() {
             const { login } = ApiService(token);
             const response = await login(data);
 
-
             updateToken(response.data.token);
+            await refreshUser();
             navigate("/");
         } catch (error) {
             setLoginError(error.response?.data?.message || 'Email ou senha incorretos.');

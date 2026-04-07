@@ -5,35 +5,33 @@ import { FaPaw, FaEnvelope, FaLock, FaUser, FaArrowLeft, FaSearch } from 'react-
 import { ApiService } from '../services/ApiService';
 import DevDog from '../assets/sentado.svg';
 import { useAuth } from '../contexts/AuthContext';
+import { useUser } from '../contexts/UserContext';
 
 export default function Register() {
     const navigate = useNavigate();
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const [registerError, setRegisterError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null);
     const { token, updateToken } = useAuth();
-
+    const { refreshUser } = useUser();
 
     const password = watch('password');
 
     const onSubmit = async (data) => {
         setIsLoading(true);
         setRegisterError(null);
-        setSuccessMessage(null);
 
         try {
-            const { register: register } = ApiService(token);
+            const { register } = ApiService(token);
             const response = await register({
                 name: data.name,
                 email: data.email,
                 password: data.password
             });
 
-            console.log('Registro bem sucedido:', response);
             updateToken(response.data.token);
+            await refreshUser();
             navigate('/');
-
         } catch (error) {
             setRegisterError(error.response?.data?.message || 'Erro ao criar conta. Tente novamente.');
         } finally {
@@ -173,15 +171,6 @@ export default function Register() {
                         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3">
                             <p className="text-red-600 dark:text-red-400 text-sm text-center">
                                 {registerError}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Mensagem de sucesso */}
-                    {successMessage && (
-                        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-3">
-                            <p className="text-green-600 dark:text-green-400 text-sm text-center">
-                                {successMessage}
                             </p>
                         </div>
                     )}
