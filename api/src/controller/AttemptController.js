@@ -22,7 +22,7 @@ class AttemptController {
 
       for (const userAttempt of attempt) {
         const isCorrect = correctAnswers.some(
-          correct => correct.line === userAttempt.line &&
+          correct => correct.line === userAttempt.line + 1 &&
             correct.smellType === userAttempt.smell
         )
 
@@ -39,7 +39,7 @@ class AttemptController {
       for (const userAttempt of attempt) {
         const hasCorrectSmell = correctAnswers.some(
           correct => correct.smellType === userAttempt.smell &&
-            correct.line === userAttempt.line
+            correct.line === userAttempt.line + 1
         )
         if (hasCorrectSmell) {
           uniqueSmells.add(userAttempt.smell)
@@ -48,7 +48,7 @@ class AttemptController {
       correctSmellsCount = uniqueSmells.size
 
       // Salva a tentativa
-      const savedAttempt = await prisma.attempt.create({
+      await prisma.attempt.create({
         data: {
           userId: userId,
           exerciseId: exerciseId,
@@ -59,6 +59,22 @@ class AttemptController {
 
       // Percentual de acerto
       const score = (correctLinesCount / correctAnswers.length) * 100
+
+      // Adiciona moedas
+      let bonus = 0;
+      if (score === 100) bonus = 5;
+      else if (score >= 80) bonus = 4;
+      else if (score >= 60) bonus = 3;
+      else if (score >= 40) bonus = 2;
+      else bonus = 1;
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          coins: {
+            increment: bonus
+          }
+        }
+      });
 
       return res.json({
         success: true,
