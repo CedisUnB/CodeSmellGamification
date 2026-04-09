@@ -25,7 +25,7 @@ export const ApiService = (token) => {
 
         getExercises: () => api.get('/exercise'),
         getExerciseById: (id) => api.get(`/exercise/${id}`),
-        getTip: (id, tipNumber) => api.post(`/exercise/${id}/tip`, tipNumber),
+        getTip: (id, tipNumber) => api.get(`/exercise/${id}/tip?tipNumber=${tipNumber}`),
         getStatistics: (id) => api.get(`/exercise/${id}/statistics`),
 
         makeAttempt: (id, attempt) => api.post(`/exercise/${id}/attempt`, attempt),

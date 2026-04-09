@@ -73,7 +73,8 @@ class ExerciseController {
     let { id: exerciseId } = req.params
     exerciseId = parseInt(exerciseId)
 
-    const { tipNumber } = req.body // 1, 2 ou 3
+    let { tipNumber } = req.query // 1, 2 ou 3
+    tipNumber = parseInt(tipNumber)
 
     const TIP_COST = 1
 

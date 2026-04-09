@@ -1,7 +1,8 @@
 import { FaCheckCircle, FaClipboard } from 'react-icons/fa';
 import { translate } from '../utils/enumTranslator';
+import TipButton from './TipButton';
 
-export default function ExerciseInfo({ exercise, classifiedLines }) {
+export default function ExerciseInfo({ exercise, classifiedLines, onSmellsTipReq, onLinesTipReq }) {
     // Agrupa submissões por smell
     const submissionsBySmell = classifiedLines.reduce((acc, sub) => {
         const smellLabel = sub.smell;
@@ -62,14 +63,14 @@ export default function ExerciseInfo({ exercise, classifiedLines }) {
                 </div>
             )}
 
-            {/* Dica (se disponível) */}
-            {exercise.tip && (
-                <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border-t border-orange-200 dark:border-orange-800">
-                    <p className="text-xs text-orange-700 dark:text-orange-300">
-                        Dica: {exercise.tip}
-                    </p>
-                </div>
-            )}
+            {/* Área de dicas */}
+            <div className="p-4 border-t border-neutral-200 dark:border-neutral-700">
+                <TipButton
+                    exerciseId={exercise.id}
+                    onSmellsTipReq={onSmellsTipReq}
+                    onLinesTipReq={onLinesTipReq}
+                />
+            </div>
         </div>
     );
 }

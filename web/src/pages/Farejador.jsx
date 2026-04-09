@@ -29,6 +29,8 @@ export default function Farejador() {
     const { makeAttempt } = ApiService(token);
     const [showResult, setShowResult] = useState(false);
     const [attemptResult, setAttemptResult] = useState(null);
+    const [tipNumSmells, setTipNumSmells] = useState(null);
+    const [tipNumLines, setTipNumLines] = useState(null);
 
     useEffect(() => {
         const { getExerciseById } = ApiService(token);
@@ -155,6 +157,8 @@ export default function Farejador() {
                     <ExerciseInfo
                         exercise={exercise}
                         classifiedLines={classifiedLines}
+                        onLinesTipReq={setTipNumLines}
+                        onSmellsTipReq={setTipNumSmells}
                     />
                     {/* DevDog com instruções */}
                     <ExerciseTutor
@@ -181,8 +185,8 @@ export default function Farejador() {
                 <ResultPopup
                     result={attemptResult}
                     onClose={handleCloseResult}
-                    numSmells={null} //TODO: mudar quando tiver as dicas
-                    numLines={null} //TODO: mudar quando tiver as dicas
+                    numSmells={tipNumSmells} //TODO: mudar quando tiver as dicas
+                    numLines={tipNumLines} //TODO: mudar quando tiver as dicas
                 />
             )}
         </div>
