@@ -13,7 +13,6 @@ const AuthProvider = ({ children }) => {
     });
 
     const updateToken = (newToken) => {
-        console.log('updateToken:', newToken);
         setToken(newToken);
         if (newToken) {
             localStorage.setItem("token", newToken);
@@ -23,8 +22,7 @@ const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        setToken(null);
-        localStorage.removeItem("token");
+        updateToken(null);
     };
 
     return (

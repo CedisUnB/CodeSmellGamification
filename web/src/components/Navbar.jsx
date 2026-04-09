@@ -10,7 +10,7 @@ export default function Navbar() {
   const location = useLocation();
 
   const { logout } = useAuth();
-  const { user, refreshUser } = useUser();
+  const { user } = useUser();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const navItems = [
@@ -23,11 +23,10 @@ export default function Navbar() {
     return location.pathname === path;
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     logout();
     setIsUserMenuOpen(false);
-    await refreshUser();
-    navigate("/");
+    window.location.href = '/';
   };
 
   return (

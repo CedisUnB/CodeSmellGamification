@@ -7,6 +7,7 @@ import ExerciseInfo from '../components/ExerciseInfo';
 import { FaForward } from 'react-icons/fa';
 import ExerciseTutor from '../components/ExerciseTutor';
 import ResultPopup from '../components/ResultPopup';
+import { useUser } from '../contexts/UserContext';
 
 const DEVDOG_STATES = {
     FAREJANDO: 'farejando',
@@ -16,6 +17,7 @@ const DEVDOG_STATES = {
 
 export default function Farejador() {
     const { id } = useParams();
+    const { refreshUser } = useUser();
     const { token } = useContext(AuthContext);
     const [exercise, setExercise] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -98,6 +100,7 @@ export default function Farejador() {
                 !correctLinesFromBackend.includes(item.line)
             );
 
+            refreshUser();
             setCorrectLines(correct);
             setIncorrectLines(incorrect);
             setSelectedLines([]);

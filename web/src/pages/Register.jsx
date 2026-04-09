@@ -5,15 +5,13 @@ import { FaPaw, FaEnvelope, FaLock, FaUser, FaArrowLeft, FaSearch } from 'react-
 import { ApiService } from '../services/ApiService';
 import DevDog from '../assets/sentado.svg';
 import { useAuth } from '../contexts/AuthContext';
-import { useUser } from '../contexts/UserContext';
 
 export default function Register() {
     const navigate = useNavigate();
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const [registerError, setRegisterError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const { token, updateToken } = useAuth();
-    const { refreshUser } = useUser();
+    const { token, sessionId, updateToken } = useAuth();
 
     const password = watch('password');
 
@@ -26,12 +24,12 @@ export default function Register() {
             const response = await register({
                 name: data.name,
                 email: data.email,
-                password: data.password
+                password: data.password,
+                sessionId: sessionId
             });
 
             updateToken(response.data.token);
-            await refreshUser();
-            navigate('/');
+            window.location.href = '/';
         } catch (error) {
             setRegisterError(error.response?.data?.message || 'Erro ao criar conta. Tente novamente.');
         } finally {

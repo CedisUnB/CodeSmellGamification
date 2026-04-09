@@ -10,8 +10,11 @@ const UserProvider = ({ children }) => {
     const { token, sessionId, updateToken } = useAuth();
 
     useEffect(() => {
-        const { getMe, anonymousLogin } = ApiService(token);
         const loadUser = async () => {
+
+            setLoading(true);
+            const { getMe, anonymousLogin } = ApiService(token);
+
             // Sem token, cria anônimo
             if (!token) {
                 try {
@@ -19,9 +22,10 @@ const UserProvider = ({ children }) => {
                     updateToken(data.token);
                 } catch (error) {
                     console.error("Erro no login anônimo:", error);
+                    setLoading(false);
                 }
+                return;
             }
-
             // Com token, busca usuário
             try {
                 const { data } = await getMe();
@@ -39,7 +43,7 @@ const UserProvider = ({ children }) => {
     }, [token, sessionId, updateToken]);
 
     const refreshUser = async () => {
-        window.location.href = '/'; // TODO: VErificar essa solução depois
+        if (!token) return;
         const { getMe } = ApiService(token);
         try {
             const { data } = await getMe();

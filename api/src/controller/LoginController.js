@@ -38,11 +38,9 @@ class LoginController {
 
     async login(request, response) {
         const { email, password, sessionId } = request.body
-        try {
-            const user = await prisma.user.findUnique({
-                where: { email }
-            })
 
+        try {
+            const user = await prisma.user.findUnique({ where: { email } })
             if (!user) {
                 return response.status(404).json({ error: 'Usuário não encontrado' })
             }
@@ -55,14 +53,40 @@ class LoginController {
 
             let transferInfo = null
 
-            // Se forneceu sessionId, tenta migrar dados do anônimo
+            // Migração: se tem sessionId e usuário NÃO é anônimo
             if (sessionId && !user.isAnonymous) {
-                const anonymousEmail = `anon_${sessionId}@temp.br`
-                const anonymousUser = await prisma.user.findUnique({
-                    where: { email: anonymousEmail }
+                const anonymous = await prisma.user.findUnique({
+                    where: { email: `anon_${sessionId}@temp.br` },
+                    include: { attempts: true }
                 })
-                if (anonymousUser && anonymousUser.isAnonymous) {
-                    transferInfo = await this.migrateAnonymousData(anonymousUser.id, user.id)
+
+                if (anonymous?.isAnonymous) {
+                    transferInfo = await prisma.$transaction(async (prisma) => {
+                        // Transfere coins
+                        await prisma.user.update({
+                            where: { id: user.id },
+                            data: { coins: { increment: anonymous.coins } }
+                        })
+
+                        // Transfere tentativas
+                        if (anonymous.attempts.length) {
+                            await prisma.attempt.updateMany({
+                                where: { userId: anonymous.id },
+                                data: { userId: user.id }
+                            })
+                        }
+
+                        // Desativa anônimo
+                        await prisma.user.update({
+                            where: { id: anonymous.id },
+                            data: { email: null, coins: 0, mergedToId: user.id }
+                        })
+
+                        return {
+                            coinsTransferred: anonymous.coins,
+                            attemptsTransferred: anonymous.attempts.length
+                        }
+                    })
                 }
             }
 
@@ -78,55 +102,6 @@ class LoginController {
             return response.status(500).json({ error: error.message })
         }
     }
-
-    async migrateAnonymousData(anonymousUserId, registeredUserId) {
-        return await prisma.$transaction(async (prisma) => {
-            // Busca o anônimo
-            const anonymous = await prisma.user.findUnique({
-                where: { id: anonymousUserId },
-                include: { attempts: true }
-            })
-
-            if (!anonymous || !anonymous.isAnonymous) {
-                throw new Error('Usuário anônimo não encontrado');
-            }
-
-            // 1. Transfere as moedas
-            await prisma.user.update({
-                where: { id: registeredUserId },
-                data: {
-                    coins: {
-                        increment: anonymous.coins
-                    }
-                }
-            })
-
-            // 2. Transfere as tentativas
-            if (anonymous.attempts.length > 0) {
-                await prisma.attempt.updateMany({
-                    where: { userId: anonymousUserId },
-                    data: { userId: registeredUserId }
-                })
-            }
-
-            // 3. Marca o anônimo como inativo (soft delete)
-            await prisma.user.update({
-                where: { id: anonymousUserId },
-                data: {
-                    email: null,
-                    coins: 0,
-                    mergedToId: registeredUserId
-                }
-            })
-
-            return {
-                coinsTransferred: anonymous.coins,
-                attemptsTransferred: anonymous.attempts.length
-            }
-        })
-    }
-
-
 
     async register(request, response) {
         const { name, email, password, sessionId } = request.body
