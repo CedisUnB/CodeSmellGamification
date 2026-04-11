@@ -31,7 +31,8 @@ class UserController {
 
   async addCoins(req, res) {
     const { id } = req.user
-    const { coins } = req.body
+    let { coins } = req.body
+    coins = parseInt(coins)
 
     try {
       const updatedUser = await prisma.user.update({
@@ -42,7 +43,11 @@ class UserController {
           }
         },
         select: {
+          id: true,
+          name: true,
+          email: true,
           coins: true,
+          isAnonymous: true,
         }
       })
 

@@ -53,8 +53,17 @@ const UserProvider = ({ children }) => {
         }
     };
 
+    const updateUser = (data) => {
+        if (!token) return;
+        try {
+            setUser(data);
+        } catch (error) {
+            console.error("Erro ao atualizar usuário:", error);
+        }
+    };
+
     return (
-        <UserContext.Provider value={{ user, loading, refreshUser }}>
+        <UserContext.Provider value={{ user, loading, refreshUser, updateUser }}>
             {children}
         </UserContext.Provider>
     );
