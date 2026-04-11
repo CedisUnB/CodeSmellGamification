@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { FaPaw, FaEnvelope, FaLock, FaSearch, FaEyeSlash, FaEye } from 'react-icons/fa';
 import { ApiService } from '../services/ApiService';
 import { useAuth } from '../contexts/AuthContext';
-import DevDog from '../assets/sentado.svg';
+import DevDog from '../assets/farejador.svg';
 
 export default function Login() {
     const navigate = useNavigate();

@@ -27,6 +27,7 @@ class ExerciseController {
   async list(req, res) {
     const { id: userId } = req.user
 
+    // Busca todos os exercícios
     const exercises = await prisma.exercise.findMany({
       select: {
         id: true,
@@ -40,11 +41,40 @@ class ExerciseController {
       }
     })
 
+    const completedExercises = exercises.filter(ex => ex.attempts.length > 0)
+    const pendingExercises = exercises.filter(ex => ex.attempts.length === 0)
+
+    // Lógica de recomendação:
+    // 1. Se não fez nenhum exercício: recomenda 1 exercício fácil
+    // 2. Se já fez alguns: recomenda 1 exercício do próximo nível não feito
+    let recommendedId = null
+
+    if (completedExercises.length === 0) {
+      const firstEasy = pendingExercises.find(ex => ex.difficulty === 'EASY')
+      if (firstEasy) recommendedId = firstEasy.id
+    } else {
+      const hasHard = completedExercises.some(ex => ex.difficulty === 'HARD')
+      const hasMedium = completedExercises.some(ex => ex.difficulty === 'MEDIUM')
+
+      if (!hasMedium) {
+        const mediumExercise = pendingExercises.find(ex => ex.difficulty === 'MEDIUM')
+        if (mediumExercise) recommendedId = mediumExercise.id
+      } else if (!hasHard) {
+        const hardExercise = pendingExercises.find(ex => ex.difficulty === 'HARD')
+        if (hardExercise) recommendedId = hardExercise.id
+      } else {
+        if (pendingExercises.length > 0) {
+          recommendedId = pendingExercises[0].id
+        }
+      }
+    }
+
     const formattedExercises = exercises.map(exercise => ({
       id: exercise.id,
       title: exercise.title,
       difficulty: exercise.difficulty,
-      hasAttempt: exercise.attempts.length > 0
+      hasAttempt: exercise.attempts.length > 0,
+      recommended: exercise.id === recommendedId
     }))
 
     return res.json(formattedExercises)

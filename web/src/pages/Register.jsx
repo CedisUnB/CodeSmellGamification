@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { FaPaw, FaEnvelope, FaLock, FaUser, FaSearch, FaEyeSlash, FaEye } from 'react-icons/fa';
 import { ApiService } from '../services/ApiService';
-import DevDog from '../assets/sentado.svg';
+import DevDog from '../assets/carinho.svg';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Register() {
