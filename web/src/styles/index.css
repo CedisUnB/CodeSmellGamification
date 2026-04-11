@@ -42,3 +42,7 @@ div::-webkit-scrollbar-thumb:hover {
 .dark div::-webkit-scrollbar-thumb {
     background: #f97316;
 }
+
+button {
+    cursor: pointer;
+}

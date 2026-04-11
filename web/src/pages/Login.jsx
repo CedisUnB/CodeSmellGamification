@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { FaPaw, FaEnvelope, FaLock, FaSearch } from 'react-icons/fa';
+import { FaPaw, FaEnvelope, FaLock, FaSearch, FaEyeSlash, FaEye } from 'react-icons/fa';
 import { ApiService } from '../services/ApiService';
 import { useAuth } from '../contexts/AuthContext';
 import DevDog from '../assets/sentado.svg';
@@ -12,6 +12,7 @@ export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [loginError, setLoginError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const onSubmit = async (data) => {
         setIsLoading(true);
@@ -38,15 +39,17 @@ export default function Login() {
 
     return (
         <div className="max-w-md w-full">
-            {/* Logo e título */}
-            <div className="text-center mb-8">
+            <div
+                className="text-center mb-8 cursor-pointer group"
+                onClick={() => navigate('/')}
+            >
                 <div className="flex justify-center mb-4">
                     <div className="relative">
-                        <div className="absolute inset-0 bg-linear-to-r from-orange-500 to-red-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+                        <div className="absolute inset-0 bg-linear-to-r from-orange-500 to-red-500 rounded-full blur-2xl opacity-30 animate-pulse group-hover:opacity-50 transition-opacity"></div>
                         <img
                             src={DevDog}
                             alt="DevDog"
-                            className="w-20 h-20 object-contain relative z-10 mx-auto"
+                            className="w-20 h-20 object-contain relative z-10 mx-auto group-hover:scale-105 transition-transform duration-300"
                         />
                     </div>
                 </div>
@@ -95,12 +98,21 @@ export default function Login() {
                             <FaLock className="inline mr-2 text-neutral-400" />
                             Senha
                         </label>
-                        <input
-                            {...register('password', { required: 'Senha é obrigatória' })}
-                            type="password"
-                            placeholder="••••••••"
-                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                        />
+                        <div className="relative">
+                            <input
+                                {...register('password', { required: 'Senha é obrigatória' })}
+                                type={showPassword ? "text" : "password"}
+                                placeholder="••••••••"
+                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-orange-500 transition-colors"
+                            >
+                                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+                            </button>
+                        </div>
                         {errors.password && (
                             <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
                         )}
