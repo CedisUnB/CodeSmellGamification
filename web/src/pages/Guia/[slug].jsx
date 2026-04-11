@@ -4,14 +4,14 @@ import { FaArrowLeft, FaPaw } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import DevDog from '../../assets/sentado.svg';
 import { parseFrontmatter } from '../../utils/markdownParser';
+import { usePetiscoGame } from '../../hooks/usePetiscoGame';
+import FloatingPetisco from '../../components/FloatingPetisco';
 
 const guideModules = import.meta.glob('/src/content/*.md', {
     query: '?raw',
     import: 'default',
     eager: false
 });
-
-// TODO: Adicionar gamificacao de pegar petiscos
 
 const categoryConfig = {
     'bloaters': { label: 'Inchados', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
@@ -53,6 +53,8 @@ export default function GuiaDetalhe() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const { petiscos, collectPetisco, stopGame, startGame } = usePetiscoGame();
+
     useEffect(() => {
         async function loadGuide() {
             setLoading(true);
@@ -77,6 +79,8 @@ export default function GuiaDetalhe() {
                     category: data.category || 'other-smells',
                     content: markdownContent
                 });
+
+                startGame(); // Inicia o jogo de encontre o pestisco
             } catch (error) {
                 console.error('Erro ao carregar guia:', error);
                 setError('Erro ao carregar o conteúdo do guia');
@@ -86,6 +90,10 @@ export default function GuiaDetalhe() {
         }
 
         loadGuide();
+
+        return () => {
+            stopGame(); // Para o jogo de encontre o pestisco
+        };
     }, [slug]);
 
     if (loading) {
@@ -97,7 +105,6 @@ export default function GuiaDetalhe() {
         );
     }
 
-    // Error state
     if (error || !guide) {
         return (
             <div className="text-center py-20">
@@ -120,8 +127,15 @@ export default function GuiaDetalhe() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8">
-            {/* Botão voltar */}
+        <div className="max-w-4xl mx-auto px-4 py-8 relative">
+            {petiscos.map(petisco => (
+                <FloatingPetisco
+                    key={petisco.id}
+                    position={petisco.position}
+                    onCollect={() => collectPetisco(petisco.id)}
+                />
+            ))}
+
             <button
                 onClick={() => navigate('/guia')}
                 className="flex items-center gap-2 text-neutral-600 hover:text-teal-500 mb-6 transition-colors group"
@@ -159,14 +173,6 @@ export default function GuiaDetalhe() {
                 </div>
             </article>
 
-            {/* Footer com DevDog */}
-            <div className="flex justify-center mt-8">
-                <img
-                    src={DevDog}
-                    alt="DevDog"
-                    className="w-16 h-16 opacity-50 hover:opacity-100 transition-opacity duration-300"
-                />
-            </div>
         </div>
     );
 }
