@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaPaw } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
-import DevDog from '../../assets/sentado.svg';
 import { parseFrontmatter } from '../../utils/markdownParser';
 import { usePetiscoGame } from '../../hooks/usePetiscoGame';
 import FloatingPetisco from '../../components/FloatingPetisco';
@@ -46,7 +45,7 @@ const MarkdownComponents = {
     )
 };
 
-export default function GuiaDetalhe() {
+export default function GuiaDetail() {
     const { slug } = useParams();
     const navigate = useNavigate();
     const [guide, setGuide] = useState(null);

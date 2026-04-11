@@ -1,13 +1,13 @@
 import { useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
-import { ApiService } from '../services/ApiService';
-import { AuthContext } from '../contexts/AuthContext';
-import CodeEditor from '../components/CodeEditor';
-import ExerciseInfo from '../components/ExerciseInfo';
+import { ApiService } from '../../services/ApiService';
+import { AuthContext } from '../../contexts/AuthContext';
+import CodeEditor from '../../components/CodeEditor';
+import ExerciseInfo from '../../components/ExerciseInfo';
 import { FaForward } from 'react-icons/fa';
-import ExerciseTutor from '../components/ExerciseTutor';
-import ResultPopup from '../components/ResultPopup';
-import { useUser } from '../contexts/UserContext';
+import ExerciseTutor from '../../components/ExerciseTutor';
+import ResultPopup from '../../components/ResultPopup';
+import { useUser } from '../../contexts/UserContext';
 
 const DEVDOG_STATES = {
     FAREJANDO: 'farejando',
@@ -15,7 +15,7 @@ const DEVDOG_STATES = {
     PIDAO: 'pidao'
 };
 
-export default function Farejador() {
+export default function FarejadorDetail() {
     const { id } = useParams();
     const { refreshUser } = useUser();
     const { token } = useContext(AuthContext);

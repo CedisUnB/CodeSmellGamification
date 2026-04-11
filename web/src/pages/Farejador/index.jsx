@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ApiService } from '../services/ApiService';
-import { AuthContext } from '../contexts/AuthContext';
+import { ApiService } from '../../services/ApiService';
+import { AuthContext } from '../../contexts/AuthContext';
 import { FaPaw } from 'react-icons/fa';
-import DevDog from '../assets/sentado.svg';
-import SpeechBubble from '../components/SpeechBubble';
-import ExerciseRow from '../components/ExerciseRow';
-import SearchAndFilter from '../components/SearchAndFilter';
+import DevDog from '../../assets/sentado.svg';
+import SpeechBubble from '../../components/SpeechBubble';
+import ExerciseRow from '../../components/ExerciseRow';
+import SearchAndFilter from '../../components/SearchAndFilter';
 
 export default function FarejadorList() {
     const { token } = useContext(AuthContext);
