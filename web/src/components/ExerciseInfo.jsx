@@ -1,6 +1,8 @@
 import { FaCheckCircle, FaClipboard } from 'react-icons/fa';
 import { translate } from '../utils/enumTranslator';
 import TipButton from './TipButton';
+import ReactMarkdown from 'react-markdown';
+import MarkdownComponents from '../utils/markdownStyles';
 
 export default function ExerciseInfo({ exercise, classifiedLines, onSmellsTipReq, onLinesTipReq }) {
     // Agrupa submissões por smell
@@ -22,9 +24,9 @@ export default function ExerciseInfo({ exercise, classifiedLines, onSmellsTipReq
 
             {/* Descrição */}
             <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
-                <p className="text-neutral-700 dark:text-neutral-300 text-sm leading-relaxed">
+                <ReactMarkdown components={MarkdownComponents}>
                     {exercise.description}
-                </p>
+                </ReactMarkdown>
             </div>
 
             {/* Dificuldade */}

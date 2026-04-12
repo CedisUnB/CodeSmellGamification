@@ -22,7 +22,7 @@ class AttemptController {
 
       for (const userAttempt of attempt) {
         const isCorrect = correctAnswers.some(
-          correct => correct.line === userAttempt.line + 1 &&
+          correct => correct.line === userAttempt.line &&
             correct.smellType === userAttempt.smell
         )
 
@@ -39,7 +39,7 @@ class AttemptController {
       for (const userAttempt of attempt) {
         const hasCorrectSmell = correctAnswers.some(
           correct => correct.smellType === userAttempt.smell &&
-            correct.line === userAttempt.line + 1
+            correct.line === userAttempt.line
         )
         if (hasCorrectSmell) {
           uniqueSmells.add(userAttempt.smell)

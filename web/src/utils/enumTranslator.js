@@ -9,11 +9,11 @@ const translations = {
     "DIVERGENT_CHANGE": "Mudança Divergente",
     "SHOTGUN_SURGERY": "Cirurgia de Espingarda",
     "FEATURE_ENVY": "Inveja de Funcionalidade",
-    "DATA_CLUMPS": "Agrupamento de Dados",
+    "DATA_CLUMPS": "Aglomerado de Dados",
     "PRIMITIVE_OBSESSION": "Obsessão por Primitivos",
     "REPEATED_SWITCHES": "Switches Repetidos",
     "LAZY_ELEMENT": "Elemento Preguiçoso",
-    "SPECULATIVE_GENERALITY": "Generalidade Especulativa",
+    "SPECULATIVE_GENERALITY": "Generalização Especulativa",
     "TEMPORARY_FIELD": "Campo Temporário",
     "MESSAGE_CHAINS": "Cadeia de Mensagens",
     "MIDDLE_MAN": "Homem do Meio",
@@ -27,4 +27,4 @@ const translations = {
     "HARD": "Difícil"
 };
 
-export const translate = (key) => translations[key] || key; 
+export const translate = (key) => translations[key] || key;

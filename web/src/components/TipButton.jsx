@@ -135,7 +135,7 @@ export default function TipButton({ exerciseId, onSmellsTipReq, onLinesTipReq })
                         )}
                         {tips.smellyLine && (
                             <p className="text-sm text-neutral-800 dark:text-neutral-200">
-                                Uma das linhas com mau cheiro é a <span className="font-bold text-orange-600">linha {tips.smellyLine - 1}</span>
+                                Uma das linhas com mau cheiro é a <span className="font-bold text-orange-600">linha {tips.smellyLine}</span>
                             </p>
                         )}
                         {!tips.linesCount && !tips.smellsCount && !tips.smellyLine && (

@@ -34,7 +34,7 @@ export default function CodeEditor({
     };
 
     const getLineClassName = (line) => {
-        let className = 'px-4 py-1 font-mono text-sm transition-colors cursor-pointer text-white dark:text-neutral-50';
+        let className = 'px-4 py-1 font-mono text-sm transition-colors cursor-pointer text-neutral-800 dark:text-neutral-50';
 
         if (line.isSelected) {
             className += ' bg-orange-200 dark:bg-orange-900/50 border-l-4 border-orange-500';
