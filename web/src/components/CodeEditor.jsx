@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { FaUndo, FaCode } from 'react-icons/fa';
-
+import { FaCode, FaCopy, FaCheck, FaUndoAlt } from 'react-icons/fa';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Tooltip from './Tooltip';
 
 export default function CodeEditor({
     code,
@@ -11,6 +13,7 @@ export default function CodeEditor({
     incorrectLines = [],
 }) {
     const [hoveredLine, setHoveredLine] = useState(null);
+    const [copied, setCopied] = useState(false);
 
     const lines = code ? code.trimStart().split('\n').map((content, index) => ({
         number: index + 1,
@@ -33,24 +36,64 @@ export default function CodeEditor({
         onLinesSelect([]);
     };
 
+    const handleCopyCode = async () => {
+        try {
+            await navigator.clipboard.writeText(code);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Erro ao copiar:', err);
+        }
+    };
+
+    const detectLanguage = (codeString) => {
+        if (codeString.includes('function') || codeString.includes('=>') || codeString.includes('const ')) {
+            return 'javascript';
+        }
+        if (codeString.includes('class ') && codeString.includes('def ')) {
+            return 'python';
+        }
+        if (codeString.includes('public static void main')) {
+            return 'java';
+        }
+        return 'javascript';
+    };
+
     const getLineClassName = (line) => {
-        let className = 'px-4 py-1 font-mono text-sm transition-colors cursor-pointer text-neutral-800 dark:text-neutral-50';
+        let className = 'flex flex-row align-middle px-4 py-1 font-mono text-sm transition-colors cursor-pointer';
 
         if (line.isSelected) {
-            className += ' bg-orange-200 dark:bg-orange-900/50 border-l-4 border-orange-500';
+            className += ' bg-orange-500/30 border-l-4 border-orange-500';
         } else if (line.isClassified) {
-            className += ' bg-yellow-100 dark:bg-yellow-900/30';
+            className += ' bg-yellow-500/30';
         } else if (line.isCorrect) {
-            className += ' bg-green-100 dark:bg-green-900/30';
+            className += ' bg-green-500/30';
         } else if (line.isIncorrect) {
-            className += ' bg-red-100 dark:bg-red-900/30';
+            className += ' bg-red-500/30 line-through opacity-70';
         } else if (hoveredLine === line.number) {
-            className += ' bg-neutral-100 dark:bg-neutral-700';
+            className += ' bg-neutral-200 dark:bg-neutral-700';
         } else {
-            className += ' hover:bg-neutral-100 dark:hover:bg-neutral-700';
+            className += ' hover:bg-neutral-100 dark:hover:bg-neutral-800';
         }
-
         return className;
+    };
+
+    const renderLineWithHighlight = (line) => {
+        const language = detectLanguage(line.content);
+
+        return (
+            <SyntaxHighlighter
+                language={language}
+                style={dracula}
+                customStyle={{
+                    background: 'transparent',
+                    padding: 0,
+                    margin: 0,
+                }}
+            >
+                {line.content || ' '}
+            </SyntaxHighlighter>
+        );
     };
 
     return (
@@ -58,21 +101,38 @@ export default function CodeEditor({
 
             {/* Header do código */}
             <div className="bg-linear-to-r from-orange-500 to-red-500 px-4 py-3 flex justify-between items-center">
-                <span className="text-white font-semibold flex gap-2 items-center"><FaCode size={20} />Código</span>
+                <span className="text-white font-semibold flex gap-2 items-center">
+                    <FaCode size={20} />
+                    Código
+                </span>
 
-                {selectedLines.length > 0 && (
-                    <button
-                        onClick={handleClearSelection}
-                        className="text-white hover:bg-white/20 px-4 rounded-lg transition-colors flex items-center gap-2"
-                    >
-                        <FaUndo size={12} /> Limpar
-                    </button>
-                )}
+                <div className="flex gap-2">
+                    {/* Botão Limpar */}
+                    {selectedLines.length > 0 && (
+                        <Tooltip text="Limpar seleção">
+                            <button
+                                onClick={handleClearSelection}
+                                className="text-white hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+                            >
+                                <FaUndoAlt size={16} />
+                            </button>
+                        </Tooltip>
+                    )}
+                    {/* Botão Copiar */}
+                    <Tooltip text="Copiar código">
+                        <button
+                            onClick={handleCopyCode}
+                            className="text-white hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            {copied ? <FaCheck size={16} /> : <FaCopy size={16} />}
+                        </button>
+                    </Tooltip>
+                </div>
             </div>
 
             {/* Área de código com numeração */}
-            <div className="overflow-x-auto">
-                <div className="min-w-full">
+            <div className="overflow-auto">
+                <div className="max-h-200">
                     {lines.map((line) => (
                         <div
                             key={line.number}
@@ -81,23 +141,14 @@ export default function CodeEditor({
                             onMouseEnter={() => setHoveredLine(line.number)}
                             onMouseLeave={() => setHoveredLine(null)}
                         >
-                            <span className="inline-block w-12 text-right text-neutral-400 dark:text-neutral-500 select-none mr-4">
+                            <span className="self-center flex justify-center w-4 text-right text-neutral-400 dark:text-neutral-500 select-none mr-4">
                                 {line.number}
                             </span>
-                            <span className="whitespace-pre-wrap wrap-break-word">
-                                {line.content || ' '}
-                            </span>
+                            {renderLineWithHighlight(line)}
                         </div>
                     ))}
                 </div>
             </div>
-
-
-
-
-
         </div>
-
-
     );
 }
