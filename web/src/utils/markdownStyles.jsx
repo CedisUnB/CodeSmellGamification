@@ -1,12 +1,55 @@
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { darcula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+
 const MarkdownComponents = {
-    h1: ({ children }) => <h1 className="dark:text-neutral-50 text-2xl font-bold mt-8 mb-4">{children}</h1>,
-    h2: ({ children }) => <h2 className="dark:text-neutral-50 text-xl font-bold mt-6 mb-3">{children}</h2>,
-    h3: ({ children }) => <h3 className="dark:text-neutral-50 text-lg font-bold mt-4 mb-2">{children}</h3>,
+    h1: ({ children }) => <h1 className="text-orange-400 text-2xl font-bold mt-8 mb-4">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-orange-400 text-xl font-bold mt-6 mb-3">{children}</h2>,
+    h3: ({ children }) => <h3 className="text-orange-400 text-lg font-bold mt-4 mb-2">{children}</h3>,
     p: ({ children }) => <p className="text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">{children}</p>,
-    pre: ({ children }) => <pre className="bg-neutral-900 text-neutral-100 p-4 rounded-xl overflow-x-auto my-4">{children}</pre>,
-    code: ({ inline, children }) => inline
-        ? <code className="bg-neutral-100 dark:bg-neutral-700 px-1.5 py-0.5 rounded text-sm">{children}</code>
-        : <code>{children}</code>,
+
+    code: ({ children, className, inline }) => {
+        const match = /language-(\w+)/.exec(className || '');
+        const language = match ? match[1] : '';
+
+        const isBlock = className || String(children).includes('\n');
+
+        if (!isBlock && !inline) {
+            return (
+                <code className="bg-neutral-200 dark:bg-neutral-700 text-orange-400 px-1.5 py-0.5 rounded-2xl text-sm">
+                    {children}
+                </code>
+            );
+        }
+
+        return (
+            <div className="my-4">
+                <div className="flex justify-end gap-2 px-3 py-2 bg-neutral-900 rounded-t-2xl border-x border-t border-neutral-700">
+                    <span className="w-4 h-4 rounded-full bg-red-500"></span>
+                    <span className="w-4 h-4 rounded-full bg-yellow-500"></span>
+                    <span className="w-4 h-4 rounded-full bg-green-500"></span>
+                    {language && (
+                        <span className="text-xs text-neutral-400 ml-auto">
+                            {language}
+                        </span>
+                    )}
+                </div>
+                <SyntaxHighlighter
+                    className="bg-linear-120 dark:from-neutral-900 dark:to-neutral-800 from-neutral-200 to-neutral-100 0 p-4 rounded-b-xl overflow-x-auto shadow-2xl border border-neutral-200 dark:border-neutral-700"
+                    language={language || 'javascript'}
+                    style={darcula}
+                    customStyle={{
+                        margin: 0,
+                        background: 'none'
+                    }}
+                >
+                    {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
+            </div>
+        );
+    },
+
+    pre: ({ children }) => <>{children}</>,
+
     ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-1">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-1">{children}</ol>,
     li: ({ children }) => <li className="text-neutral-700 dark:text-neutral-300">{children}</li>,

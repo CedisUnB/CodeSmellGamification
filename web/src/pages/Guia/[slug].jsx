@@ -131,7 +131,7 @@ export default function GuiaDetail() {
                 </div>
 
                 {/* Título */}
-                <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+                <h1 className="text-2xl md:text-3xl font-bold linear text-transparent bg-clip-text bg-linear-to-r from-teal-400 to-indigo-600 mb-4">
                     {guide.title}
                 </h1>
 
