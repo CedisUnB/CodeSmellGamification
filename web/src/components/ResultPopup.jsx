@@ -5,7 +5,7 @@ import DevDogCarinho from '../assets/carinho.svg';
 import DevDogSentado from '../assets/sentado.svg';
 import DevDogMorto from '../assets/morto.svg';
 
-export default function ResultPopup({ result, onClose, numSmells, numLines }) {
+export default function ResultPopup({ result, onClose, tips }) {
     const { correctLines, correctSmells, score } = result;
 
     // Calcula estrelas baseado no score
@@ -116,7 +116,7 @@ export default function ResultPopup({ result, onClose, numSmells, numLines }) {
                             Linhas problemáticas identificadas:
                         </span>
                         <span className="font-bold text-green-600 dark:text-green-400">
-                            {score === 100 ? `${correctLines}/${correctLines}` : `${correctLines}/${numLines || "??"}`}
+                            {score === 100 ? `${correctLines}/${correctLines}` : `${correctLines}/${tips.linesCount || "??"}`}
                         </span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -124,7 +124,7 @@ export default function ResultPopup({ result, onClose, numSmells, numLines }) {
                             Maus cheiros categorizados:
                         </span>
                         <span className="font-bold text-blue-600 dark:text-blue-400">
-                            {score === 100 ? `${correctSmells}/${correctSmells}` : `${correctSmells}/${numSmells || "??"}`}
+                            {score === 100 ? `${correctSmells}/${correctSmells}` : `${correctSmells}/${tips.smellsCount || "??"}`}
                         </span>
                     </div>
                 </div>

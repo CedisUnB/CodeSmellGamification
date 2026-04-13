@@ -1,32 +1,38 @@
 import { useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
-import { ApiService } from '../services/ApiService';
-import { AuthContext } from '../contexts/AuthContext';
-import CodeEditor from '../components/CodeEditor';
-import ExerciseInfo from '../components/ExerciseInfo';
+import { ApiService } from '../../services/ApiService';
+import { AuthContext } from '../../contexts/AuthContext';
+import ExerciseCode from '../../components/ExerciseCode';
+import ExerciseInfo from '../../components/ExerciseInfo';
 import { FaForward } from 'react-icons/fa';
-import ExerciseTutor from '../components/ExerciseTutor';
-import ResultPopup from '../components/ResultPopup';
+import ResultPopup from '../../components/ResultPopup';
+import { useUser } from '../../contexts/UserContext';
 
 const DEVDOG_STATES = {
     FAREJANDO: 'farejando',
-    SENTADO: 'sentado',
+    FAREJADOR: 'farejador',
     PIDAO: 'pidao'
 };
 
-export default function Farejador() {
+export default function FarejadorDetail() {
     const { id } = useParams();
+    const { refreshUser } = useUser();
     const { token } = useContext(AuthContext);
+    const { makeAttempt } = ApiService(token);
     const [exercise, setExercise] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [currentState, setCurrentState] = useState(DEVDOG_STATES.FAREJANDO);
+    const [dogState, setDogState] = useState(DEVDOG_STATES.FAREJANDO);
     const [selectedLines, setSelectedLines] = useState([]);
     const [classifiedLines, setClassifiedLines] = useState([]);
     const [correctLines, setCorrectLines] = useState([]);
     const [incorrectLines, setIncorrectLines] = useState([]);
-    const { makeAttempt } = ApiService(token);
-    const [showResult, setShowResult] = useState(false);
     const [attemptResult, setAttemptResult] = useState(null);
+    const [showResult, setShowResult] = useState(false);
+    const [tips, setTips] = useState({
+        linesCount: null,
+        smellsCount: null,
+        smellyLine: null
+    });
 
     useEffect(() => {
         const { getExerciseById } = ApiService(token);
@@ -50,20 +56,20 @@ export default function Farejador() {
         if (!exercise) return;
 
         const timer = setTimeout(() => {
-            if (selectedLines.length === 0 && currentState === DEVDOG_STATES.FAREJANDO) {
-                setCurrentState(DEVDOG_STATES.PIDAO);
+            if (selectedLines.length === 0 && dogState === DEVDOG_STATES.FAREJANDO) {
+                setDogState(DEVDOG_STATES.PIDAO);
             }
         }, 15000);
 
         return () => clearTimeout(timer);
-    }, [selectedLines, currentState, exercise]);
+    }, [selectedLines, dogState, exercise]);
 
     // Atualiza estado do DevDog baseado nas ações do usuário
     useEffect(() => {
         if (selectedLines.length > 0) {
-            setCurrentState(DEVDOG_STATES.SENTADO);
+            setDogState(DEVDOG_STATES.FAREJADOR);
         } else if (selectedLines.length === 0) {
-            setCurrentState(DEVDOG_STATES.FAREJANDO);
+            setDogState(DEVDOG_STATES.FAREJANDO);
         }
     }, [selectedLines]);
 
@@ -79,7 +85,7 @@ export default function Farejador() {
 
         setClassifiedLines([...classifiedLines, ...newClassifications]);
         setSelectedLines([]);
-        setCurrentState(DEVDOG_STATES.FAREJANDO);
+        setDogState(DEVDOG_STATES.FAREJANDO);
     };
 
     const handleSubmit = async () => {
@@ -98,6 +104,7 @@ export default function Farejador() {
                 !correctLinesFromBackend.includes(item.line)
             );
 
+            refreshUser();
             setCorrectLines(correct);
             setIncorrectLines(incorrect);
             setSelectedLines([]);
@@ -132,7 +139,7 @@ export default function Farejador() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             {/* Título */}
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl sm:text-3xl font-bold text-neutral-800 dark:text-neutral-100">
@@ -141,29 +148,27 @@ export default function Farejador() {
                 <button
                     onClick={handleSubmit}
                     disabled={classifiedLines.length === 0}
-                    className="px-4 py-2 rounded-lg bg-linear-to-r from-orange-500 to-red-500 text-white font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="px-4 py-2 rounded-lg bg-linear-to-r from-orange-500 to-orange-600 text-white font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                     <FaForward size={16} /> Enviar
                 </button>
             </div>
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex flex-col lg:flex-row">
                 {/* Coluna Esquerda - Informações e DevDog */}
-                <div className="lg:w-2/5 xl:w-1/3">
+                <div className="lg:w-5/12 xl:w-1/3">
                     <ExerciseInfo
                         exercise={exercise}
                         classifiedLines={classifiedLines}
-                    />
-                    {/* DevDog com instruções */}
-                    <ExerciseTutor
-                        currentState={currentState}
+                        dogState={dogState}
                         onLineClassification={handleLineClassification}
                         selectedLines={selectedLines}
+                        tips={tips}
+                        setTips={setTips}
                     />
                 </div>
-
                 {/* Coluna Direita - Código */}
-                <div className="lg:w-3/5 xl:w-2/3">
-                    <CodeEditor
+                <div className="lg:w-7/12 xl:w-2/3">
+                    <ExerciseCode
                         code={exercise.code}
                         selectedLines={selectedLines}
                         onLinesSelect={handleLinesSelect}
@@ -178,8 +183,7 @@ export default function Farejador() {
                 <ResultPopup
                     result={attemptResult}
                     onClose={handleCloseResult}
-                    numSmells={null} //TODO: mudar quando tiver as dicas
-                    numLines={null} //TODO: mudar quando tiver as dicas
+                    tips={tips}
                 />
             )}
         </div>

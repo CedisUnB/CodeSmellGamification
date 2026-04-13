@@ -1,44 +1,35 @@
+import { useState } from 'react';
 import DevDogFarejando from '../assets/farejando.svg';
-import DevDogSentado from '../assets/sentado.svg';
+import DevDogFarejador from '../assets/farejador.svg';
 import DevDogPidao from '../assets/pidao.svg';
 import SpeechBubble from './SpeechBubble';
 import { translate } from '../utils/enumTranslator';
+import { FaPaperPlane } from 'react-icons/fa';
 
 // Estados do DevDog
 const DEVDOG_STATES = {
     FAREJANDO: 'farejando',
-    SENTADO: 'sentado',
+    FAREJADOR: 'farejador',
     PIDAO: 'pidao'
 };
 
 const SMELL_OPTIONS = [
-    { id: "MYSTERIOUS_NAME", color: "bg-orange-500" },
-    { id: "DUPLICATED_CODE", color: "bg-orange-500" },
-    { id: "LONG_METHOD", color: "bg-orange-500" },
-    { id: "LONG_PARAMETER_LIST", color: "bg-orange-500" },
-    { id: "GLOBAL_DATA", color: "bg-orange-500" },
-    { id: "MUTABLE_DATA", color: "bg-orange-500" },
-    { id: "DIVERGENT_CHANGE", color: "bg-orange-500" },
-    { id: "SHOTGUN_SURGERY", color: "bg-orange-500" },
-    { id: "FEATURE_ENVY", color: "bg-orange-500" },
-    { id: "DATA_CLUMPS", color: "bg-orange-500" },
-    { id: "PRIMITIVE_OBSESSION", color: "bg-orange-500" },
-    { id: "REPEATED_SWITCHES", color: "bg-orange-500" },
-    { id: "LAZY_ELEMENT", color: "bg-orange-500" },
-    { id: "SPECULATIVE_GENERALITY", color: "bg-orange-500" },
-    { id: "TEMPORARY_FIELD", color: "bg-orange-500" },
-    { id: "MESSAGE_CHAINS", color: "bg-orange-500" },
-    { id: "MIDDLE_MAN", color: "bg-orange-500" },
-    { id: "LARGE_CLASS", color: "bg-orange-500" },
-    { id: "COMMENTS", color: "bg-orange-500" },
-];
+    "MYSTERIOUS_NAME", "DUPLICATED_CODE", "LONG_METHOD", "LONG_PARAMETER_LIST", "GLOBAL_DATA", "MUTABLE_DATA", "DIVERGENT_CHANGE", "SHOTGUN_SURGERY", "FEATURE_ENVY", "DATA_CLUMPS", "PRIMITIVE_OBSESSION", "REPEATED_SWITCHES", "LAZY_ELEMENT", "SPECULATIVE_GENERALITY", "TEMPORARY_FIELD", "MESSAGE_CHAINS", "MIDDLE_MAN", "LARGE_CLASS", "COMMENTS"]
 
-export default function ExerciseTutor({ currentState, onLineClassification, selectedLines }) {
+export default function ExerciseTutor({ dogState, onLineClassification, selectedLines }) {
+    const [selectedSmell, setSelectedSmell] = useState('');
+
+    const handleSubmit = () => {
+        if (selectedSmell) {
+            onLineClassification(selectedSmell);
+            setSelectedSmell('');
+        }
+    };
 
     const getDevDogImage = () => {
-        switch (currentState) {
-            case DEVDOG_STATES.SENTADO:
-                return DevDogSentado;
+        switch (dogState) {
+            case DEVDOG_STATES.FAREJADOR:
+                return DevDogFarejador;
             case DEVDOG_STATES.PIDAO:
                 return DevDogPidao;
             default:
@@ -46,14 +37,10 @@ export default function ExerciseTutor({ currentState, onLineClassification, sele
         }
     };
 
-    return (
-
-        <div className="mt-6 flex flex-col items-center">
-            <SpeechBubble
-                quotationMarks={false}
-                tailSide="bottom"
-            >
-                {currentState === DEVDOG_STATES.FAREJANDO && (
+    if (dogState === DEVDOG_STATES.FAREJANDO) {
+        return (
+            <div className="flex flex-col items-center justify-center gap-2 h-70">
+                <SpeechBubble quotationMarks={false} tailSide="bottom">
                     <div>
                         <p className="text-base sm:text-lg font-semibold text-orange-800 dark:text-orange-300 mb-2">
                             Vamos começar!
@@ -63,51 +50,87 @@ export default function ExerciseTutor({ currentState, onLineClassification, sele
                             algum mau cheiro de código.
                         </p>
                     </div>
-                )}
+                </SpeechBubble>
+                <img
+                    src={getDevDogImage()}
+                    alt="DevDog"
+                    className="h-20 object-contain hover:scale-105 transition-transform duration-300"
+                />
+            </div>
+        );
+    }
 
-                {currentState === DEVDOG_STATES.SENTADO && (
+    if (dogState === DEVDOG_STATES.FAREJADOR) {
+        return (
+            <div className="flex flex-col items-center justify-center gap-2 h-70">
+                <SpeechBubble quotationMarks={false} tailSide="bottom">
                     <div>
                         <p className="text-base sm:text-lg font-semibold text-orange-800 dark:text-orange-300 mb-2">
                             Opa! Vamos classificar esse mau cheiro.
                         </p>
-                        <p className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300 mb-4">
-                            As linhas <span className="font-bold">{selectedLines.join(', ')}</span> são maus cheiros de que tipo?
-                        </p>
+                        <p className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300 mb-4">{
+                            selectedLines.length === 1 ?
+                                `A linha ${selectedLines[0]} tem um mau cheiro de que tipo?` :
+                                `As linhas ${selectedLines.join(', ')} tem maus cheiros de que tipo?`
+                        }</p>
 
-                        {/* Container com scroll */}
-                        <div className="max-h-64 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-                            {SMELL_OPTIONS.map((smell) => (
-                                <button
-                                    key={smell.id}
-                                    onClick={() => onLineClassification(smell.id)}
-                                    className={`w-full text-left px-4 py-2 rounded-lg text-white font-medium ${smell.color} hover:opacity-90 transition-opacity`}
-                                >
-                                    {translate(smell.id) || smell.id}
-                                </button>
-                            ))}
+                        <div className="flex">
+                            <select
+                                value={selectedSmell}
+                                onChange={(e) => setSelectedSmell(e.target.value)}
+                                className="flex-1 px-3 py-2 bg-white dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                                style={{
+                                    appearance: 'none',
+                                    WebkitAppearance: 'none',
+                                    MozAppearance: 'none',
+                                }}
+                            >
+                                <option value="">Selecione...</option>
+                                {SMELL_OPTIONS.map((smell) => (
+                                    <option key={smell} value={smell}>
+                                        {translate(smell)}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <button
+                                onClick={handleSubmit}
+                                disabled={!selectedSmell}
+                                className="px-4 py-2 bg-linear-to-r from-orange-500 to-red-500 text-white rounded-r-lg font-medium hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+                            >
+                                <FaPaperPlane size={14} /></button>
                         </div>
                     </div>
-                )}
+                </SpeechBubble>
+                <img
+                    src={getDevDogImage()}
+                    alt="DevDog"
+                    className="h-30 object-contain hover:scale-105 transition-transform duration-300"
+                />
+            </div>
+        );
+    }
 
-                {currentState === DEVDOG_STATES.PIDAO && (
+    if (dogState === DEVDOG_STATES.PIDAO) {
+        return (
+            <div className="flex flex-row items-center justify-center gap-2 h-70">
+                <img
+                    src={getDevDogImage()}
+                    alt="DevDog"
+                    className="h-48 object-contain hover:scale-105 transition-transform duration-300"
+                />
+                <SpeechBubble quotationMarks={false} tailSide="left" >
                     <div>
                         <p className="text-base sm:text-lg font-semibold text-orange-800 dark:text-orange-300 mb-2">
-                            Não que eu seja interesseiro mas esses petiscos parecem deliciosos!
+                            Esses petiscos parecem deliciosos!
                         </p>
                         <p className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300">
-                            Se quiser te dou uma dica em troca de um deles...
+                            Se quiser te dou uma dica em troca de um deles...<br />
+                            Vá até a aba Dicas e clique no pote.
                         </p>
                     </div>
-                )}
-
-
-            </SpeechBubble>
-
-            <img
-                src={getDevDogImage()}
-                alt="DevDog"
-                className="w-32 object-contain mt-4 hover:scale-105 transition-transform duration-300"
-            />
-        </div>
-    )
+                </SpeechBubble>
+            </div>
+        );
+    }
 }
