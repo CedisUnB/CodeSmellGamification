@@ -29,7 +29,7 @@ export default function Tooltip({ children, text }) {
 
             {isVisible && (
                 <div
-                    className="fixed z-50 px-2 py-2 text-sm text-white bg-neutral-800 dark:bg-neutral-700 rounded shadow-lg whitespace-nowrap pointer-events-none"
+                    className="fixed z-50 px-4 py-2 text-md text-neutral-200 bg-neutral-800 dark:bg-neutral-700 rounded-xl shadow-lg whitespace-nowrap pointer-events-none"
                     style={{
                         left: `${position.x}px`,
                         top: `${position.y}px`,
@@ -37,7 +37,7 @@ export default function Tooltip({ children, text }) {
                     }}
                 >
                     {text}
-                    <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-neutral-800 dark:border-t-neutral-700"></div>
+                    <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-neutral-800 dark:border-t-neutral-700"></div>
                 </div>
             )}
         </>

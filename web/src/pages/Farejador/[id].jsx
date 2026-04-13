@@ -18,18 +18,21 @@ export default function FarejadorDetail() {
     const { id } = useParams();
     const { refreshUser } = useUser();
     const { token } = useContext(AuthContext);
+    const { makeAttempt } = ApiService(token);
     const [exercise, setExercise] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [currentState, setCurrentState] = useState(DEVDOG_STATES.FAREJANDO);
+    const [currentState, setCurrentState] = useState(DEVDOG_STATES.FAREJANDO); //TODO: Renomear para dogState
     const [selectedLines, setSelectedLines] = useState([]);
     const [classifiedLines, setClassifiedLines] = useState([]);
     const [correctLines, setCorrectLines] = useState([]);
     const [incorrectLines, setIncorrectLines] = useState([]);
-    const { makeAttempt } = ApiService(token);
-    const [showResult, setShowResult] = useState(false);
     const [attemptResult, setAttemptResult] = useState(null);
-    const [tipNumSmells, setTipNumSmells] = useState(null);
-    const [tipNumLines, setTipNumLines] = useState(null);
+    const [showResult, setShowResult] = useState(false);
+    const [tips, setTips] = useState({
+        linesCount: null,
+        smellsCount: null,
+        smellyLine: null
+    });
 
     useEffect(() => {
         const { getExerciseById } = ApiService(token);
@@ -145,7 +148,7 @@ export default function FarejadorDetail() {
                 <button
                     onClick={handleSubmit}
                     disabled={classifiedLines.length === 0}
-                    className="px-4 py-2 rounded-lg bg-linear-to-r from-orange-500 to-red-500 text-white font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="px-4 py-2 rounded-lg bg-linear-to-r from-orange-500 to-orange-600 text-white font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                     <FaForward size={16} /> Enviar
                 </button>
@@ -156,14 +159,13 @@ export default function FarejadorDetail() {
                     <ExerciseInfo
                         exercise={exercise}
                         classifiedLines={classifiedLines}
-                        onLinesTipReq={setTipNumLines}
-                        onSmellsTipReq={setTipNumSmells}
                         currentState={currentState}
                         onLineClassification={handleLineClassification}
                         selectedLines={selectedLines}
+                        tips={tips}
+                        setTips={setTips}
                     />
                 </div>
-
                 {/* Coluna Direita - Código */}
                 <div className="lg:w-7/12 xl:w-2/3">
                     <CodeEditor
@@ -181,8 +183,7 @@ export default function FarejadorDetail() {
                 <ResultPopup
                     result={attemptResult}
                     onClose={handleCloseResult}
-                    numSmells={tipNumSmells}
-                    numLines={tipNumLines}
+                    tips={tips}
                 />
             )}
         </div>

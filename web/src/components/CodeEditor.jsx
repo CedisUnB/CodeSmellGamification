@@ -71,7 +71,7 @@ export default function CodeEditor({
         } else if (line.isIncorrect) {
             className += ' bg-red-500/30 line-through opacity-70';
         } else if (hoveredLine === line.number) {
-            className += ' bg-neutral-200 dark:bg-neutral-700';
+            className += ' bg-neutral-700 dark:bg-neutral-700';
         } else {
             className += ' hover:bg-neutral-100 dark:hover:bg-neutral-800';
         }
@@ -97,42 +97,46 @@ export default function CodeEditor({
     };
 
     return (
-        <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700">
+        <div className="bg-neutral-800 dark:bg-neutral-800 rounded-r-2xl shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 h-220">
 
             {/* Header do código */}
-            <div className="bg-linear-to-r from-orange-500 to-red-500 px-4 py-3 flex justify-between items-center">
-                <span className="text-white font-semibold flex gap-2 items-center">
-                    <FaCode size={20} />
-                    Código
-                </span>
+            <div className="border-b border-neutral-200 dark:border-neutral-700 bg-orange-500">
+                <div className="flex items-center justify-between px-4">
+                    <div className="px-4 py-3 text-sm font-medium transition-all text-bold text-neutral-100">
+                        <div className="flex items-center gap-2">
+                            <FaCode size={14} />
+                            Código
+                        </div>
+                    </div>
 
-                <div className="flex gap-2">
-                    {/* Botão Limpar */}
-                    {selectedLines.length > 0 && (
-                        <Tooltip text="Limpar seleção">
+                    <div className="flex gap-2">
+                        {/* Botão Limpar */}
+                        {selectedLines.length > 0 && (
+                            <Tooltip text="Limpar seleção">
+                                <button
+                                    onClick={handleClearSelection}
+                                    className="text-neutral-300 hover:text-neutral-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+                                >
+                                    <FaUndoAlt size={16} />
+                                </button>
+                            </Tooltip>
+                        )}
+                        {/* Botão Copiar */}
+                        <Tooltip text="Copiar código">
                             <button
-                                onClick={handleClearSelection}
-                                className="text-white hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+                                onClick={handleCopyCode}
+                                className="text-neutral-300 hover:text-neutral-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
                             >
-                                <FaUndoAlt size={16} />
+                                {copied ? <FaCheck size={16} /> : <FaCopy size={16} />}
                             </button>
                         </Tooltip>
-                    )}
-                    {/* Botão Copiar */}
-                    <Tooltip text="Copiar código">
-                        <button
-                            onClick={handleCopyCode}
-                            className="text-white hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
-                        >
-                            {copied ? <FaCheck size={16} /> : <FaCopy size={16} />}
-                        </button>
-                    </Tooltip>
+                    </div>
                 </div>
             </div>
 
             {/* Área de código com numeração */}
             <div className="overflow-auto">
-                <div className="max-h-200">
+                <div className="max-h-208">
                     {lines.map((line) => (
                         <div
                             key={line.number}
@@ -144,7 +148,7 @@ export default function CodeEditor({
                             <span className="self-center flex justify-center w-4 text-right text-neutral-400 dark:text-neutral-500 select-none mr-4">
                                 {line.number}
                             </span>
-                            <span>
+                            <span >
                                 {renderLineWithHighlight(line)}
                             </span>
                         </div>

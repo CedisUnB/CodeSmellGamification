@@ -122,10 +122,11 @@ export default function ExerciseTutor({ currentState, onLineClassification, sele
                 <SpeechBubble quotationMarks={false} tailSide="left" >
                     <div>
                         <p className="text-base sm:text-lg font-semibold text-orange-800 dark:text-orange-300 mb-2">
-                            Não que eu seja interesseiro mas esses petiscos parecem deliciosos!
+                            Esses petiscos parecem deliciosos!
                         </p>
                         <p className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300">
-                            Se quiser te dou uma dica em troca de um deles...
+                            Se quiser te dou uma dica em troca de um deles...<br />
+                            Vá até a aba Dicas e clique no pote.
                         </p>
                     </div>
                 </SpeechBubble>
