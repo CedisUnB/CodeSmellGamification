@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { ApiService } from '../../services/ApiService';
 import { AuthContext } from '../../contexts/AuthContext';
-import CodeEditor from '../../components/CodeEditor';
+import ExerciseCode from '../../components/ExerciseCode';
 import ExerciseInfo from '../../components/ExerciseInfo';
 import { FaForward } from 'react-icons/fa';
 import ResultPopup from '../../components/ResultPopup';
@@ -21,7 +21,7 @@ export default function FarejadorDetail() {
     const { makeAttempt } = ApiService(token);
     const [exercise, setExercise] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [currentState, setCurrentState] = useState(DEVDOG_STATES.FAREJANDO); //TODO: Renomear para dogState
+    const [dogState, setDogState] = useState(DEVDOG_STATES.FAREJANDO);
     const [selectedLines, setSelectedLines] = useState([]);
     const [classifiedLines, setClassifiedLines] = useState([]);
     const [correctLines, setCorrectLines] = useState([]);
@@ -56,20 +56,20 @@ export default function FarejadorDetail() {
         if (!exercise) return;
 
         const timer = setTimeout(() => {
-            if (selectedLines.length === 0 && currentState === DEVDOG_STATES.FAREJANDO) {
-                setCurrentState(DEVDOG_STATES.PIDAO);
+            if (selectedLines.length === 0 && dogState === DEVDOG_STATES.FAREJANDO) {
+                setDogState(DEVDOG_STATES.PIDAO);
             }
         }, 15000);
 
         return () => clearTimeout(timer);
-    }, [selectedLines, currentState, exercise]);
+    }, [selectedLines, dogState, exercise]);
 
     // Atualiza estado do DevDog baseado nas ações do usuário
     useEffect(() => {
         if (selectedLines.length > 0) {
-            setCurrentState(DEVDOG_STATES.FAREJADOR);
+            setDogState(DEVDOG_STATES.FAREJADOR);
         } else if (selectedLines.length === 0) {
-            setCurrentState(DEVDOG_STATES.FAREJANDO);
+            setDogState(DEVDOG_STATES.FAREJANDO);
         }
     }, [selectedLines]);
 
@@ -85,7 +85,7 @@ export default function FarejadorDetail() {
 
         setClassifiedLines([...classifiedLines, ...newClassifications]);
         setSelectedLines([]);
-        setCurrentState(DEVDOG_STATES.FAREJANDO);
+        setDogState(DEVDOG_STATES.FAREJANDO);
     };
 
     const handleSubmit = async () => {
@@ -159,7 +159,7 @@ export default function FarejadorDetail() {
                     <ExerciseInfo
                         exercise={exercise}
                         classifiedLines={classifiedLines}
-                        currentState={currentState}
+                        dogState={dogState}
                         onLineClassification={handleLineClassification}
                         selectedLines={selectedLines}
                         tips={tips}
@@ -168,7 +168,7 @@ export default function FarejadorDetail() {
                 </div>
                 {/* Coluna Direita - Código */}
                 <div className="lg:w-7/12 xl:w-2/3">
-                    <CodeEditor
+                    <ExerciseCode
                         code={exercise.code}
                         selectedLines={selectedLines}
                         onLinesSelect={handleLinesSelect}

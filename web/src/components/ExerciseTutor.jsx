@@ -16,7 +16,7 @@ const DEVDOG_STATES = {
 const SMELL_OPTIONS = [
     "MYSTERIOUS_NAME", "DUPLICATED_CODE", "LONG_METHOD", "LONG_PARAMETER_LIST", "GLOBAL_DATA", "MUTABLE_DATA", "DIVERGENT_CHANGE", "SHOTGUN_SURGERY", "FEATURE_ENVY", "DATA_CLUMPS", "PRIMITIVE_OBSESSION", "REPEATED_SWITCHES", "LAZY_ELEMENT", "SPECULATIVE_GENERALITY", "TEMPORARY_FIELD", "MESSAGE_CHAINS", "MIDDLE_MAN", "LARGE_CLASS", "COMMENTS"]
 
-export default function ExerciseTutor({ currentState, onLineClassification, selectedLines }) {
+export default function ExerciseTutor({ dogState, onLineClassification, selectedLines }) {
     const [selectedSmell, setSelectedSmell] = useState('');
 
     const handleSubmit = () => {
@@ -27,7 +27,7 @@ export default function ExerciseTutor({ currentState, onLineClassification, sele
     };
 
     const getDevDogImage = () => {
-        switch (currentState) {
+        switch (dogState) {
             case DEVDOG_STATES.FAREJADOR:
                 return DevDogFarejador;
             case DEVDOG_STATES.PIDAO:
@@ -37,7 +37,7 @@ export default function ExerciseTutor({ currentState, onLineClassification, sele
         }
     };
 
-    if (currentState === DEVDOG_STATES.FAREJANDO) {
+    if (dogState === DEVDOG_STATES.FAREJANDO) {
         return (
             <div className="flex flex-col items-center justify-center gap-2 h-70">
                 <SpeechBubble quotationMarks={false} tailSide="bottom">
@@ -60,7 +60,7 @@ export default function ExerciseTutor({ currentState, onLineClassification, sele
         );
     }
 
-    if (currentState === DEVDOG_STATES.FAREJADOR) {
+    if (dogState === DEVDOG_STATES.FAREJADOR) {
         return (
             <div className="flex flex-col items-center justify-center gap-2 h-70">
                 <SpeechBubble quotationMarks={false} tailSide="bottom">
@@ -111,7 +111,7 @@ export default function ExerciseTutor({ currentState, onLineClassification, sele
         );
     }
 
-    if (currentState === DEVDOG_STATES.PIDAO) {
+    if (dogState === DEVDOG_STATES.PIDAO) {
         return (
             <div className="flex flex-row items-center justify-center gap-2 h-70">
                 <img

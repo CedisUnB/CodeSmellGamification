@@ -1,7 +1,7 @@
 import { FaCheckCircle } from 'react-icons/fa';
 import { translate } from '../utils/enumTranslator';
 
-export default function ClassificacoesTab({ submissionsBySmell }) {
+export default function TabClassification({ submissionsBySmell }) {
     if (Object.keys(submissionsBySmell).length === 0) {
         return (
             <div className="h-full flex items-center justify-center p-5">

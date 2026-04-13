@@ -4,7 +4,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Tooltip from './Tooltip';
 
-export default function CodeEditor({
+export default function ExerciseCode({
     code,
     onLinesSelect,
     selectedLines,

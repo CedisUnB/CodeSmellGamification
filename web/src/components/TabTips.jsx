@@ -15,7 +15,7 @@ const TIP_STAGES = {
     SPECIFIC_LINE: 3
 };
 
-export default function DicasTab({ exerciseId, tips, setTips }) {
+export default function TabTips({ exerciseId, tips, setTips }) {
     const { token } = useAuth();
     const { user, refreshUser } = useUser();
     const [loading, setLoading] = useState(false);

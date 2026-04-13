@@ -1,6 +1,6 @@
 import { FaChartBar } from 'react-icons/fa';
 
-export default function EstatisticasTab() {
+export default function TabStatistics() {
     return (
         <div className="h-full flex items-center justify-center p-5">
             <div className="text-center text-neutral-500 dark:text-neutral-400">

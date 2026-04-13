@@ -1,12 +1,11 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from 'react';
 import { FaClipboard, FaLightbulb, FaChartBar, FaList } from 'react-icons/fa';
 import ExerciseTutor from './ExerciseTutor';
 import Tabs from './Tabs';
-import SobreTab from './SobreTab';
-import ClassificacoesTab from './ClassificacoesTab';
-import DicasTab from './DicasTab';
-import EstatisticasTab from './EstatisticasTab';
+import TabAbout from './TabAbout';
+import TabClassification from './TabClassification';
+import TabTips from './TabTips';
+import TabStatistics from './TabStatistics';
 
 const TABS = {
     SOBRE: 'sobre',
@@ -18,7 +17,7 @@ const TABS = {
 export default function ExerciseInfo({
     exercise,
     classifiedLines,
-    currentState,
+    dogState,
     onLineClassification,
     selectedLines,
     tips,
@@ -35,7 +34,8 @@ export default function ExerciseInfo({
     // Quando classifiedLines mudar, vai para a aba de Classificações
     useEffect(() => {
         if (classifiedLines.length > 0) {
-            setActiveTab(TABS.CLASSIFICACOES);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setActiveTab(TABS.CLASSIFICACOES); //TODO: Revisar erro de lint
         }
     }, [classifiedLines]);
 
@@ -63,31 +63,31 @@ export default function ExerciseInfo({
             {/* Conteúdo da aba */}
             <div className="flex-1 min-h-0">
                 {activeTab === TABS.SOBRE && (
-                    <SobreTab
+                    <TabAbout
                         exercise={exercise}
                         totalSmellsFound={totalSmellsFound}
                         totalLinesFound={totalLinesFound}
                     />
                 )}
                 {activeTab === TABS.CLASSIFICACOES && (
-                    <ClassificacoesTab submissionsBySmell={submissionsBySmell} />
+                    <TabClassification submissionsBySmell={submissionsBySmell} />
                 )}
                 {activeTab === TABS.DICAS && (
-                    <DicasTab
+                    <TabTips
                         exerciseId={exercise.id}
                         tips={tips}
                         setTips={setTips}
                     />
                 )}
                 {activeTab === TABS.ESTATISTICAS && (
-                    <EstatisticasTab />
+                    <TabStatistics />
                 )}
             </div>
 
             {/* DevDog com instruções */}
             <div className="p-5 border-t border-neutral-200 dark:border-neutral-700">
                 <ExerciseTutor
-                    currentState={currentState}
+                    dogState={dogState}
                     onLineClassification={onLineClassification}
                     selectedLines={selectedLines}
                 />

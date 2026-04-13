@@ -2,7 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import MarkdownComponents from '../utils/markdownStyles';
 import { FaChartLine, FaTag } from 'react-icons/fa';
 
-export default function SobreTab({ exercise, totalSmellsFound, totalLinesFound }) {
+export default function TabAbout({ exercise, totalSmellsFound, totalLinesFound }) {
     const getDifficultyConfig = () => {
         if (exercise.difficulty === 'EASY') {
             return { label: 'Fácil', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', icon: '🌱' };
