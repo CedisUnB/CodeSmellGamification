@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ApiService } from '../services/ApiService';
 import { useAuth } from '../contexts/AuthContext';
 import { useUser } from '../contexts/UserContext';
+import { FaLightbulb, FaLock, FaCheck, FaSpinner } from 'react-icons/fa';
 import petiscosPoteVazio from '../assets/dicaVazio.svg';
 import petiscosPoteUm from '../assets/dicaUm.svg';
 import petiscosPoteDois from '../assets/dicaDois.svg';
@@ -23,9 +24,10 @@ export default function TipButton({ exerciseId, onSmellsTipReq, onLinesTipReq })
         smellyLine: null
     });
     const [loading, setLoading] = useState(false);
+    const [hoveredTip, setHoveredTip] = useState(null);
 
     const fetchTip = async (stage) => {
-        if (loading) return;
+        if (loading || stage > 3) return;
 
         setLoading(true);
         try {
@@ -34,10 +36,10 @@ export default function TipButton({ exerciseId, onSmellsTipReq, onLinesTipReq })
 
             if (stage === TIP_STAGES.LINES_COUNT) {
                 setTips(prev => ({ ...prev, linesCount: response.data.tip.linesCount }));
-                onLinesTipReq(response.data.tip.linesCount);
+                onLinesTipReq?.(response.data.tip.linesCount);
             } else if (stage === TIP_STAGES.SMELL_TYPES) {
                 setTips(prev => ({ ...prev, smellsCount: response.data.tip.smellsCount }));
-                onSmellsTipReq(response.data.tip.smellsCount);
+                onSmellsTipReq?.(response.data.tip.smellsCount);
             } else if (stage === TIP_STAGES.SPECIFIC_LINE) {
                 setTips(prev => ({ ...prev, smellyLine: response.data.tip.smellyLine }));
             }
@@ -63,93 +65,153 @@ export default function TipButton({ exerciseId, onSmellsTipReq, onLinesTipReq })
     };
 
     const hasEnoughCoins = user?.coins >= 1;
+    const isTipUnlocked = (stage) => currentTipStage >= stage;
+
+    const availableTips = [
+        { id: 1, title: 'Quantas linhas têm mau cheiro?', value: tips.linesCount, icon: '📊', visible: tips.linesCount !== null },
+        { id: 2, title: 'Quais tipos de mau cheiro existem?', value: tips.smellsCount, icon: '🎯', visible: tips.smellsCount !== null },
+        { id: 3, title: 'Uma linha específica', value: tips.smellyLine, icon: '📍', visible: tips.smellyLine !== null }
+    ];
+
+    const visibleTips = availableTips.filter(tip => tip.visible);
 
     return (
-        <div className="flex flex-col gap-3">
-            {/* Indicadores de progresso estilo setas */}
-            <div className="flex items-center">
-                {/* Dica 1 */}
-                <div className={`flex-1 relative ${currentTipStage >= 1 ? 'bg-orange-500' : 'bg-neutral-200 dark:bg-neutral-700'} h-10 flex items-center justify-center`}
-                    style={{
-                        clipPath: 'polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%)'
-                    }}
-                >
-                    <span className={`text-sm font-medium ${currentTipStage >= 1 ? 'text-white' : 'text-neutral-500'}`}>
-                        Dica 1
-                    </span>
-                </div>
-
-                {/* Dica 2 */}
-                <div className={`flex-1 relative -ml-4 ${currentTipStage >= 2 ? 'bg-orange-500' : 'bg-neutral-200 dark:bg-neutral-700'} h-10 flex items-center justify-center`}
-                    style={{
-                        clipPath: 'polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%)'
-                    }}
-                >
-                    <span className={`text-sm font-medium ${currentTipStage >= 2 ? 'text-white' : 'text-neutral-500'}`}>
-                        Dica 2
-                    </span>
-                </div>
-
-                {/* Dica 3 */}
-                <div className={`flex-1 relative -ml-4 ${currentTipStage >= 3 ? 'bg-orange-500' : 'bg-neutral-200 dark:bg-neutral-700'} h-10 flex items-center justify-center`}
-                    style={{
-                        clipPath: 'polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%)'
-                    }}
-                >
-                    <span className={`text-sm font-medium ${currentTipStage >= 3 ? 'text-white' : 'text-neutral-500'}`}>
-                        Dica 3
-                    </span>
-                </div>
-
-                {/* Botão do pote */}
-                <button
-                    onClick={() => fetchTip(currentTipStage + 1)}
-                    disabled={loading || currentTipStage >= 3 || !hasEnoughCoins}
-                    className="ml-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <img
-                        src={getPoteImage()}
-                        alt="Petisco"
-                        className="w-10 h-10 object-contain hover:scale-110 transition-transform"
-                    />
-                </button>
-            </div>
-
-            {/* Mensagem da dica */}
-            <div className="bg-neutral-100 dark:bg-neutral-700 rounded-lg p-3 min-h-15">
-                {loading ? (
-                    <div className="flex justify-center">
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-orange-500 border-t-transparent"></div>
+        <div className="space-y-4">
+            {/* Cabeçalho */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                        <FaLightbulb size={14} className="text-amber-600 dark:text-amber-400" />
                     </div>
-                ) : (
-                    <>
-                        {tips.linesCount && (
-                            <p className="text-sm text-neutral-800 dark:text-neutral-200">
-                                Este exercício tem <span className="font-bold text-orange-600">{tips.linesCount}</span> linha(s) com mau cheiro
-                            </p>
+                    <div>
+                        <h4 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                            Dicas do DevDog
+                        </h4>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                            {hasEnoughCoins ? `${user?.coins} petisco(s) disponível(is)` : 'Sem petiscos suficientes'}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Pote de petiscos */}
+                <div className="relative">
+                    <button
+                        onClick={() => fetchTip(currentTipStage + 1)}
+                        disabled={loading || currentTipStage >= 3 || !hasEnoughCoins}
+                        className="group relative disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <img
+                            src={getPoteImage()}
+                            alt="Petiscos"
+                            className="w-12 h-12 object-contain transition-transform group-hover:scale-110 duration-200"
+                        />
+                        {!hasEnoughCoins && currentTipStage < 3 && (
+                            <div className="absolute -top-1 -right-1">
+                                <FaLock size={12} className="text-neutral-500" />
+                            </div>
                         )}
-                        {tips.smellsCount && (
-                            <p className="text-sm text-neutral-800 dark:text-neutral-200">
-                                Este exercício tem <span className="font-bold text-orange-600">{tips.smellsCount}</span> tipo(s) diferente(s) de mau cheiro
-                            </p>
-                        )}
-                        {tips.smellyLine && (
-                            <p className="text-sm text-neutral-800 dark:text-neutral-200">
-                                Uma das linhas com mau cheiro é a <span className="font-bold text-orange-600">linha {tips.smellyLine}</span>
-                            </p>
-                        )}
-                        {!tips.linesCount && !tips.smellsCount && !tips.smellyLine && (
-                            <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center">
-                                {currentTipStage >= 3
-                                    ? "Todas as dicas foram usadas!"
-                                    : !hasEnoughCoins
-                                        ? `Você precisa de pelo menos um petisco para desbloquear uma dica (você tem ${user?.coins || 0})`
-                                        : "Clique no pote de petiscos para desbloquear uma dica"}
-                            </p>
-                        )}
-                    </>
-                )}
+                    </button>
+                </div>
             </div>
+
+            {/* Progresso das dicas */}
+            <div className="space-y-2">
+                <div className="flex items-center gap-1">
+                    {[1, 2, 3].map((stage) => (
+                        <div
+                            key={stage}
+                            className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${isTipUnlocked(stage)
+                                ? 'bg-linear-to-r from-amber-400 to-orange-500'
+                                : 'bg-neutral-200 dark:bg-neutral-700'
+                                }`}
+                        />
+                    ))}
+                </div>
+
+                <div className="flex justify-between text-xs">
+                    {[1, 2, 3].map((stage) => (
+                        <div
+                            key={stage}
+                            className={`flex items-center gap-1 cursor-pointer transition-colors ${isTipUnlocked(stage)
+                                ? 'text-amber-600 dark:text-amber-400'
+                                : 'text-neutral-400 dark:text-neutral-600'
+                                }`}
+                            onMouseEnter={() => setHoveredTip(stage)}
+                            onMouseLeave={() => setHoveredTip(null)}
+                        >
+                            {isTipUnlocked(stage) ? (
+                                <FaCheck size={10} />
+                            ) : (
+                                <span className="text-xs">○</span>
+                            )}
+                            <span className="text-xs font-medium">
+                                Dica {stage}
+                            </span>
+                            {hoveredTip === stage && !isTipUnlocked(stage) && (
+                                <span className="text-[10px] text-neutral-400 ml-1">
+                                    • Clique no pote
+                                </span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Lista de todas as dicas desbloqueadas */}
+            {visibleTips.length > 0 && (
+                <div className="space-y-2">
+                    {visibleTips.map((tip) => (
+                        <div
+                            key={tip.id}
+                            className="bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-3 border border-amber-200 dark:border-amber-800"
+                        >
+                            <div className="flex items-start gap-2">
+                                <span className="text-lg">{tip.icon}</span>
+                                <div className="flex-1">
+                                    <h5 className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                                        Dica {tip.id}
+                                    </h5>
+                                    <p className="text-sm text-neutral-700 dark:text-neutral-300 mt-0.5">
+                                        {tip.id === 1 && `Este exercício tem ${tip.value} linha(s) com mau cheiro`}
+                                        {tip.id === 2 && `Este exercício tem ${tip.value} tipo(s) diferente(s) de mau cheiro`}
+                                        {tip.id === 3 && `Uma das linhas com mau cheiro é a linha ${tip.value}`}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Estado vazio (sem dicas) */}
+            {visibleTips.length === 0 && (
+                <div className="bg-neutral-50 dark:bg-neutral-700/30 rounded-xl p-4 text-center border border-dashed border-neutral-200 dark:border-neutral-600">
+                    {loading ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <FaSpinner className="animate-spin text-amber-500" size={16} />
+                            <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                                Buscando dica...
+                            </span>
+                        </div>
+                    ) : (
+                        <>
+                            {currentTipStage >= 3 ? (
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                    🎉 Você já usou todas as dicas deste exercício!
+                                </p>
+                            ) : !hasEnoughCoins ? (
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                    🦴 Você não tem petiscos suficientes para subornar o DevDog
+                                </p>
+                            ) : (
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                    💡 Clique no pote para receber sua primeira dica
+                                </p>
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

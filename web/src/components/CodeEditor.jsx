@@ -144,7 +144,9 @@ export default function CodeEditor({
                             <span className="self-center flex justify-center w-4 text-right text-neutral-400 dark:text-neutral-500 select-none mr-4">
                                 {line.number}
                             </span>
-                            {renderLineWithHighlight(line)}
+                            <span>
+                                {renderLineWithHighlight(line)}
+                            </span>
                         </div>
                     ))}
                 </div>

@@ -5,13 +5,12 @@ import { AuthContext } from '../../contexts/AuthContext';
 import CodeEditor from '../../components/CodeEditor';
 import ExerciseInfo from '../../components/ExerciseInfo';
 import { FaForward } from 'react-icons/fa';
-import ExerciseTutor from '../../components/ExerciseTutor';
 import ResultPopup from '../../components/ResultPopup';
 import { useUser } from '../../contexts/UserContext';
 
 const DEVDOG_STATES = {
     FAREJANDO: 'farejando',
-    SENTADO: 'sentado',
+    FAREJADOR: 'farejador',
     PIDAO: 'pidao'
 };
 
@@ -65,7 +64,7 @@ export default function FarejadorDetail() {
     // Atualiza estado do DevDog baseado nas ações do usuário
     useEffect(() => {
         if (selectedLines.length > 0) {
-            setCurrentState(DEVDOG_STATES.SENTADO);
+            setCurrentState(DEVDOG_STATES.FAREJADOR);
         } else if (selectedLines.length === 0) {
             setCurrentState(DEVDOG_STATES.FAREJANDO);
         }
@@ -137,7 +136,7 @@ export default function FarejadorDetail() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             {/* Título */}
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl sm:text-3xl font-bold text-neutral-800 dark:text-neutral-100">
@@ -151,17 +150,14 @@ export default function FarejadorDetail() {
                     <FaForward size={16} /> Enviar
                 </button>
             </div>
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex flex-col lg:flex-row">
                 {/* Coluna Esquerda - Informações e DevDog */}
-                <div className="lg:w-2/5 xl:w-1/3">
+                <div className="lg:w-5/12 xl:w-1/3">
                     <ExerciseInfo
                         exercise={exercise}
                         classifiedLines={classifiedLines}
                         onLinesTipReq={setTipNumLines}
                         onSmellsTipReq={setTipNumSmells}
-                    />
-                    {/* DevDog com instruções */}
-                    <ExerciseTutor
                         currentState={currentState}
                         onLineClassification={handleLineClassification}
                         selectedLines={selectedLines}
@@ -169,7 +165,7 @@ export default function FarejadorDetail() {
                 </div>
 
                 {/* Coluna Direita - Código */}
-                <div className="lg:w-3/5 xl:w-2/3">
+                <div className="lg:w-7/12 xl:w-2/3">
                     <CodeEditor
                         code={exercise.code}
                         selectedLines={selectedLines}
@@ -185,8 +181,8 @@ export default function FarejadorDetail() {
                 <ResultPopup
                     result={attemptResult}
                     onClose={handleCloseResult}
-                    numSmells={tipNumSmells} //TODO: mudar quando tiver as dicas
-                    numLines={tipNumLines} //TODO: mudar quando tiver as dicas
+                    numSmells={tipNumSmells}
+                    numLines={tipNumLines}
                 />
             )}
         </div>
