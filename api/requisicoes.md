@@ -85,11 +85,3 @@
 **Token Obrigatório:** Sim
 **Descrição:** Busca uma dica para um exercicio e retorna o numero de linhas com smell, o numero de smells diferentes e uma linha que deve ser selecionada.
 **Caso de Uso:** Quando o usuário clicar na aba de dicas de um exercicio.
-
-#### Buscar Guias
-**Função:** ```getGuides```
-**Endpoint:** GET ```/guide```
-**Retorno:** ```[{ id: string, content: string }]```
-**Token Obrigatório:** Não
-**Descrição:** Busca todos os guias disponíveis e retorna seus dados.
-**Caso de Uso:** Quando o usuário acessar a pagina de guias (Farejador).

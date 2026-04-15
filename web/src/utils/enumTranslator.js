@@ -20,6 +20,15 @@ const translations = {
     "LARGE_CLASS": "Classe Grande",
     "COMMENTS": "Comentários",
 
+    // Categories
+    "todos": "Todos",
+    "bloaters": "Inchados",
+    "object-orientation-abusers": "Abusos de Orientação a Objetos",
+    "change-preventers": "Prevenidores de Mudança",
+    "dispensables": "Descartáveis",
+    "couplers": "Acopladores",
+    "other-smells": "Outros Maus Cheiros",
+
     // Difficulties
     "ALL": "Todos",
     "EASY": "Fácil",

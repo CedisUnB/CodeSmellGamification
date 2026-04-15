@@ -17,14 +17,14 @@ export function parseFrontmatter(content) {
             const key = line.slice(0, colonIndex).trim();
             let value = line.slice(colonIndex + 1).trim();
 
-            if (value.startsWith('"') && value.endsWith('"')) {
-                value = value.slice(1, -1);
-            }
-            if (value.startsWith("'") && value.endsWith("'")) {
+            if ((value.startsWith('"') && value.endsWith('"')) ||
+                (value.startsWith("'") && value.endsWith("'"))) {
                 value = value.slice(1, -1);
             }
 
-            data[key] = value;
+            if (value !== '') {
+                data[key] = value;
+            }
         }
     }
 

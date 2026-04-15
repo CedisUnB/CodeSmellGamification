@@ -29,7 +29,5 @@ export const ApiService = (token) => {
         getStatistics: (id) => api.get(`/exercise/${id}/statistics`),
 
         makeAttempt: (id, attempt) => api.post(`/exercise/${id}/attempt`, attempt),
-
-        getGuides: () => api.get('/guide'),
     };
 };

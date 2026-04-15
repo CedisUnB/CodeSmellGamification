@@ -1,25 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaCircle, FaStar } from 'react-icons/fa';
 import { translate } from '../utils/enumTranslator';
+import { getAlternateColor } from '../utils/colorizer';
 
 export default function ExerciseRow({ exercise }) {
     const navigate = useNavigate();
 
     const handleExerciseClick = () => {
         navigate(`/farejador/${exercise.id}`);
-    };
-
-    const getDifficultyColor = (difficulty) => {
-        switch (difficulty) {
-            case 'EASY':
-                return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
-            case 'MEDIUM':
-                return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
-            case 'HARD':
-                return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
-            default:
-                return 'text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-900/20';
-        }
     };
 
     return (
@@ -55,7 +43,7 @@ export default function ExerciseRow({ exercise }) {
                 </div>
             </td>
             <td className="px-3 sm:px-6 py-3 sm:py-4 text-center">
-                <span className={`inline-flex px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${getDifficultyColor(exercise.difficulty)}`}>
+                <span className={`inline-flex px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${getAlternateColor(exercise.difficulty)}`}>
                     {translate(exercise.difficulty)}
                 </span>
             </td>

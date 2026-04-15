@@ -97,7 +97,7 @@ export default function ExerciseCode({
     };
 
     return (
-        <div className="bg-neutral-800 dark:bg-neutral-800 rounded-r-2xl shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 h-220">
+        <div className="bg-neutral-800 dark:bg-neutral-800 rounded-r-2xl shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 h-200">
 
             {/* Header do código */}
             <div className="border-b border-neutral-200 dark:border-neutral-700 bg-orange-500">

@@ -71,6 +71,6 @@ function calculateRoyaltyPayments() {
 
 ## Benefícios
 
-- ✅ Código auto-documentado
-- ✅ Menos ruído visual
-- ✅ Comentários realmente importantes
+- Código auto-documentado
+- Menos ruído visual
+- Comentários realmente importantes

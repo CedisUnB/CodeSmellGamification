@@ -1,18 +1,17 @@
 import ReactMarkdown from 'react-markdown';
 import MarkdownComponents from '../utils/markdownStyles';
 import { FaChartLine, FaTag } from 'react-icons/fa';
+import { getAlternateColor } from '../utils/colorizer';
+import { translate } from '../utils/enumTranslator';
 
 export default function TabAbout({ exercise, totalSmellsFound, totalLinesFound }) {
-    const getDifficultyConfig = () => {
-        if (exercise.difficulty === 'EASY') {
-            return { label: 'Fácil', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', icon: '🌱' };
-        }
-        if (exercise.difficulty === 'MEDIUM') {
-            return { label: 'Médio', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', icon: '⚡' };
-        }
-        return { label: 'Difícil', color: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400', icon: '🔥' };
+
+    const difficultyIcons = {
+        EASY: '🌱',
+        MEDIUM: '⚡',
+        HARD: '🔥'
     };
-    const difficulty = getDifficultyConfig();
+    const getIcon = (difficulty) => difficultyIcons[difficulty] || '🔥';
 
     return (
         <div className="overflow-auto h-full">
@@ -34,9 +33,9 @@ export default function TabAbout({ exercise, totalSmellsFound, totalLinesFound }
                             <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">Dificuldade</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-xl">{difficulty.icon}</span>
-                            <span className={`text-sm font-semibold px-2 py-0.5 rounded-full ${difficulty.color}`}>
-                                {difficulty.label}
+                            <span className="text-xl">{getIcon(exercise.difficulty)}</span>
+                            <span className={`text-sm font-semibold px-2 py-0.5 rounded-full ${getAlternateColor(exercise.difficulty)}`}>
+                                {translate(exercise.difficulty)}
                             </span>
                         </div>
                     </div>

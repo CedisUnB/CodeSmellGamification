@@ -57,11 +57,10 @@ function calculateDiscount(items) {
 
 - **Extract Function** - Extrair código repetido para uma função
 - **Pull Up Method** - Subir método para classe pai
-- **Extract Class** - Agrupar dados e comportamentos relacionados
 
 ## Benefícios
 
-- ✅ Uma única fonte de verdade
-- ✅ Correções afetam todos os lugares
-- ✅ Código mais enxuto
-- ✅ Facilita testes
+- Uma única fonte de verdade
+- Correções afetam todos os lugares
+- Código mais enxuto
+- Facilita testes
