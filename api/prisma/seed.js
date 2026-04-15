@@ -3,23 +3,6 @@ import { PrismaClient, Difficulty, SmellType } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  // Limpa os dados existentes (opcional)
-  await prisma.attempt.deleteMany()
-  await prisma.smellLine.deleteMany()
-  await prisma.exercise.deleteMany()
-  await prisma.user.deleteMany()
-
-  // Cria usuário
-  await prisma.user.create({
-    data: {
-      name: "Ricardo",
-      email: "a@b.com",
-      password: "123",
-      isAnonymous: false,
-      coins: 100
-    }
-  });
-
   // Cria exercícios com smellLines
   await prisma.exercise.create({
     data: {
@@ -650,7 +633,6 @@ class Notificador {
   console.log("🌱 Seed executado com sucesso!")
   console.log(`📚 ${await prisma.exercise.count()} exercícios criados`)
   console.log(`📍 ${await prisma.smellLine.count()} smell lines criadas`)
-  console.log(`👤 Usuário: a@b.com / 123`)
 }
 
 main()
