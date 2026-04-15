@@ -98,18 +98,16 @@ export default function GuiaDetail() {
             </button>
 
             {/* Conteúdo principal */}
-            <article className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-6 md:p-8">
-                {/* Header com categoria */}
-                <div className="flex items-center gap-3 mb-4 flex-wrap">
-                    <span className={`text-xs px-3 py-1 rounded-full ${getAlternateColor(guide.category)}`}>
+            <article className="p-6 md:p-8">
+                {/* Título e categoria */}
+                <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-teal-400 to-indigo-600">
+                        {guide.title}
+                    </h1>
+                    <span className={`text-xs px-3 py-1 rounded-full whitespace-nowrap ${getAlternateColor(guide.category)}`}>
                         {translate(guide.category)}
                     </span>
                 </div>
-
-                {/* Título */}
-                <h1 className="text-2xl md:text-3xl font-bold linear text-transparent bg-clip-text bg-linear-to-r from-teal-400 to-indigo-600 mb-4">
-                    {guide.title}
-                </h1>
 
                 {/* Descrição */}
                 {guide.description && (
