@@ -153,7 +153,7 @@ export default function FarejadorDetail() {
     return (
         <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             {/* Título */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between px-4 mb-4">
                 <h1 className="text-2xl sm:text-3xl font-bold text-neutral-800 dark:text-neutral-100">
                     {exercise.id}. {exercise.title}
                 </h1>
