@@ -7,22 +7,14 @@ import { usePetiscoGame } from '../../hooks/usePetiscoGame';
 import FloatingPetisco from '../../components/FloatingPetisco';
 import MarkdownComponents from '../../utils/markdownStyles';
 import NotFound from '../NotFound';
+import { getAlternateColor } from '../../utils/colorizer';
+import { translate } from '../../utils/enumTranslator';
 
 const guideModules = import.meta.glob('/src/content/*.md', {
     query: '?raw',
     import: 'default',
     eager: false
 });
-
-const categoryConfig = {
-    'bloaters': { label: 'Inchados', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-    'object-orientation-abusers': { label: 'Abusos de Orientação a Objetos', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-    'change-preventers': { label: 'Prevenidores de Mudança', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
-    'dispensables': { label: 'Descartáveis', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
-    'couplers': { label: 'Acopladores', color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
-    'other-smells': { label: 'Outros Maus Cheiros', color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' }
-};
-
 
 export default function GuiaDetail() {
     const { slug } = useParams();
@@ -87,11 +79,6 @@ export default function GuiaDetail() {
         return <NotFound />;
     }
 
-    const category = categoryConfig[guide.category] || {
-        label: guide.category,
-        color: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'
-    };
-
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 relative">
             {petiscos.map(petisco => (
@@ -114,8 +101,8 @@ export default function GuiaDetail() {
             <article className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-6 md:p-8">
                 {/* Header com categoria */}
                 <div className="flex items-center gap-3 mb-4 flex-wrap">
-                    <span className={`text-xs px-3 py-1 rounded-full ${category.color}`}>
-                        {category.label}
+                    <span className={`text-xs px-3 py-1 rounded-full ${getAlternateColor(guide.category)}`}>
+                        {translate(guide.category)}
                     </span>
                 </div>
 

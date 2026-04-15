@@ -1,4 +1,6 @@
 import { FaSearch } from 'react-icons/fa';
+import { translate } from '../utils/enumTranslator';
+import { getColor } from '../utils/colorizer';
 
 export default function SearchAndFilter({
     searchTerm,
@@ -7,18 +9,12 @@ export default function SearchAndFilter({
     selectedFilter,
     onFilterChange,
     filterOptions = [],
-    filterLabels = {},
-    filterColors = {}
 }) {
-    // Cores padrão para os filtros
-    const defaultColors = {
-        default: 'bg-orange-500 text-white shadow-md',
-        inactive: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-    };
 
     const getFilterColor = (filterValue) => {
-        if (selectedFilter !== filterValue) return defaultColors.inactive;
-        return filterColors[filterValue] || defaultColors.default;
+        if (selectedFilter !== filterValue)
+            return 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700';
+        return getColor(filterValue);
     };
 
     return (
@@ -45,7 +41,7 @@ export default function SearchAndFilter({
                             onClick={() => onFilterChange(option)}
                             className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base whitespace-nowrap ${getFilterColor(option)}`}
                         >
-                            {filterLabels[option] || option}
+                            {translate(option)}
                         </button>
                     ))}
                 </div>

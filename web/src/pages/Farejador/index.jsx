@@ -9,6 +9,7 @@ import SpeechBubble from '../../components/SpeechBubble';
 import ExerciseRow from '../../components/ExerciseRow';
 import SearchAndFilter from '../../components/SearchAndFilter';
 import Pagination from '../../components/Pagination';
+import { DIFFICULTY_OPTIONS } from '../../utils/enums';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -70,13 +71,6 @@ export default function FarejadorList() {
     const recommendedExercises = paginatedExercises.filter(ex => ex.recommended);
     const regularExercises = paginatedExercises.filter(ex => !ex.recommended);
 
-    const difficultyOptions = ['ALL', 'EASY', 'MEDIUM', 'HARD'];
-    const difficultyLabels = { ALL: 'Todos', EASY: 'Fácil', MEDIUM: 'Médio', HARD: 'Difícil' };
-    const difficultyColors = {
-        EASY: 'bg-green-500 text-white shadow-md',
-        MEDIUM: 'bg-yellow-500 text-white shadow-md',
-        HARD: 'bg-red-500 text-white shadow-md'
-    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
@@ -95,9 +89,7 @@ export default function FarejadorList() {
                 searchPlaceholder="Pesquisar exercício por nome ou número..."
                 selectedFilter={selectedDifficulty}
                 onFilterChange={handleDifficultyChange}
-                filterOptions={difficultyOptions}
-                filterLabels={difficultyLabels}
-                filterColors={difficultyColors}
+                filterOptions={DIFFICULTY_OPTIONS}
             />
 
             <div className="flex flex-col-reverse lg:flex-row gap-6 lg:gap-8">

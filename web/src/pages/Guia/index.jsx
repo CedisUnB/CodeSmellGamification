@@ -7,6 +7,9 @@ import SearchAndFilter from '../../components/SearchAndFilter';
 import SpeechBubble from '../../components/SpeechBubble';
 import DevDog from '../../assets/sentado.svg';
 import Pagination from '../../components/Pagination';
+import { translate } from '../../utils/enumTranslator';
+import { getColor } from '../../utils/colorizer';
+import { CATEGORY_OPTIONS } from '../../utils/enums';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -27,6 +30,8 @@ export default function GuiaList() {
     );
 
     useEffect(() => {
+        const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+
         async function loadGuides() {
             const loadedGuides = [];
             for (const [path, loadModule] of Object.entries(guideModules)) {
@@ -36,7 +41,7 @@ export default function GuiaList() {
                     const slug = path.split('/').pop().replace('.md', '');
                     loadedGuides.push({
                         slug,
-                        title: data.title || slug.replace(/-/g, ' '),
+                        title: capitalize(data.title || slug.replace(/-/g, ' ')),
                         description: data.description || '',
                         category: data.category || 'other-smells',
                         icon: data.icon || '📚',
@@ -77,25 +82,6 @@ export default function GuiaList() {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const paginatedGuides = filteredGuides.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-    const categoryOptions = ['todos', 'bloaters', 'object-orientation-abusers', 'change-preventers', 'dispensables', 'couplers', 'other-smells'];
-    const categoryLabels = {
-        'todos': 'Todos',
-        'bloaters': 'Inchados',
-        'object-orientation-abusers': 'Abusos de Orientação a Objetos',
-        'change-preventers': 'Prevenidores de Mudança',
-        'dispensables': 'Descartáveis',
-        'couplers': 'Acopladores',
-        'other-smells': 'Outros Maus Cheiros'
-    };
-    const categoryColors = {
-        'todos': 'bg-teal-600 text-white shadow-md',
-        'bloaters': 'bg-green-600 text-white shadow-md',
-        'object-orientation-abusers': 'bg-blue-500 text-white shadow-md',
-        'change-preventers': 'bg-red-500 text-white shadow-md',
-        'dispensables': 'bg-purple-500 text-white shadow-md',
-        'couplers': 'bg-yellow-500 text-white shadow-md',
-        'other-smells': 'bg-orange-500 text-white shadow-md'
-    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
@@ -114,9 +100,7 @@ export default function GuiaList() {
                 searchPlaceholder="Pesquisar mau cheiro por nome ou descrição..."
                 selectedFilter={selectedCategory}
                 onFilterChange={handleCategoryChange}
-                filterOptions={categoryOptions}
-                filterLabels={categoryLabels}
-                filterColors={categoryColors}
+                filterOptions={CATEGORY_OPTIONS}
             />
 
             <div className="flex flex-col-reverse lg:flex-row gap-6 lg:gap-8 items-stretch">
@@ -151,8 +135,8 @@ export default function GuiaList() {
                                         <Link key={guide.slug} to={`/guia/${guide.slug}`} className="group bg-white dark:bg-neutral-800 rounded-2xl shadow-md hover:shadow-xl transition-all p-6 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 cursor-pointer">
                                             <div className="flex items-start justify-between mb-3">
                                                 <span className="text-3xl group-hover:scale-110 transition-transform">{guide.icon}</span>
-                                                <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[guide.category] || 'bg-gray-500 text-white shadow-md'}`}>
-                                                    {categoryLabels[guide.category] || guide.category}
+                                                <span className={`text-xs px-2 py-1 rounded-full ${getColor(guide.category)}`}>
+                                                    {translate(guide.category)}
                                                 </span>
                                             </div>
                                             <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">{guide.title}</h3>

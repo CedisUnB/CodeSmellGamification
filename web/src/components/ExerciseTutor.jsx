@@ -5,6 +5,7 @@ import DevDogPidao from '../assets/pidao.svg';
 import SpeechBubble from './SpeechBubble';
 import { translate } from '../utils/enumTranslator';
 import { FaPaperPlane } from 'react-icons/fa';
+import { SMELL_OPTIONS } from '../utils/enums';
 
 // Estados do DevDog
 const DEVDOG_STATES = {
@@ -13,8 +14,7 @@ const DEVDOG_STATES = {
     PIDAO: 'pidao'
 };
 
-const SMELL_OPTIONS = [
-    "MYSTERIOUS_NAME", "DUPLICATED_CODE", "LONG_METHOD", "LONG_PARAMETER_LIST", "GLOBAL_DATA", "MUTABLE_DATA", "DIVERGENT_CHANGE", "SHOTGUN_SURGERY", "FEATURE_ENVY", "DATA_CLUMPS", "PRIMITIVE_OBSESSION", "REPEATED_SWITCHES", "LAZY_ELEMENT", "SPECULATIVE_GENERALITY", "TEMPORARY_FIELD", "MESSAGE_CHAINS", "MIDDLE_MAN", "LARGE_CLASS", "COMMENTS"]
+
 
 export default function ExerciseTutor({ dogState, onLineClassification, selectedLines }) {
     const [selectedSmell, setSelectedSmell] = useState('');

@@ -35,7 +35,7 @@ export default function TabClassification({ submissionsBySmell }) {
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-amber-400"></div>
                             <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                                {translate(smell) || smell}
+                                {translate(smell)}
                             </span>
                         </div>
                         <div className="flex items-center gap-1">
