@@ -6,6 +6,7 @@ import { parseFrontmatter } from '../../utils/markdownParser';
 import { usePetiscoGame } from '../../hooks/usePetiscoGame';
 import FloatingPetisco from '../../components/FloatingPetisco';
 import MarkdownComponents from '../../utils/markdownStyles';
+import NotFound from '../NotFound';
 
 const guideModules = import.meta.glob('/src/content/*.md', {
     query: '?raw',
@@ -77,25 +78,13 @@ export default function GuiaDetail() {
         return (
             <div className="flex flex-col justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
-                <p className="text-neutral-500 mt-4">Carregando guia...</p>
+                <p className="text-neutral-500 mt-4">Carregando...</p>
             </div>
         );
     }
 
     if (error || !guide) {
-        return (
-            <div className="text-center py-20">
-                <FaPaw className="text-teal-500 text-6xl mx-auto mb-4" />
-                <h2 className="text-2xl font-bold mb-2">{error || 'Guia não encontrado'}</h2>
-                <p className="text-neutral-500 mb-4">O conteúdo que você procura não está disponível</p>
-                <button
-                    onClick={() => navigate('/guia')}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
-                >
-                    <FaArrowLeft /> Voltar para guias
-                </button>
-            </div>
-        );
+        return <NotFound />;
     }
 
     const category = categoryConfig[guide.category] || {

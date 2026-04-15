@@ -7,6 +7,7 @@ import ExerciseInfo from '../../components/ExerciseInfo';
 import { FaForward } from 'react-icons/fa';
 import ResultPopup from '../../components/ResultPopup';
 import { useUser } from '../../contexts/UserContext';
+import NotFound from '../NotFound';
 
 const DEVDOG_STATES = {
     FAREJANDO: 'farejando',
@@ -34,22 +35,36 @@ export default function FarejadorDetail() {
         smellyLine: null
     });
 
+    // Valida se o ID é um número válido
+    const isValidId = /^\d+$/.test(id);
+    const exerciseId = isValidId ? parseInt(id) : null;
+
     useEffect(() => {
+        // Se o ID não for válido, não faz a requisição
+        if (!isValidId) {
+            setLoading(false);
+            return;
+        }
+
         const { getExerciseById } = ApiService(token);
         const fetchExercise = async () => {
             setLoading(true);
             try {
-                const { data } = await getExerciseById(id);
+                const { data } = await getExerciseById(exerciseId);
                 setExercise(data);
             } catch (error) {
                 console.error('Erro ao carregar exercício:', error);
+                // Se o erro for 404, o exercício não existe
+                if (error.response?.status === 404) {
+                    setExercise(null);
+                }
             } finally {
                 setLoading(false);
             }
         };
 
         fetchExercise();
-    }, [token, id]);
+    }, [token, exerciseId, isValidId]);
 
     // Monitora o tempo para sugerir dica (30 segundos sem ação)
     useEffect(() => {
@@ -93,7 +108,7 @@ export default function FarejadorDetail() {
         setCorrectLines([]);
         setIncorrectLines([]);
         try {
-            const response = await makeAttempt(id, { attempt: classifiedLines });
+            const response = await makeAttempt(exerciseId, { attempt: classifiedLines });
 
             const correctLinesFromBackend = response.data.matchedLines;
 
@@ -124,18 +139,15 @@ export default function FarejadorDetail() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-96">
+            <div className="flex flex-col justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent"></div>
+                <p className="text-neutral-500 mt-4">Carregando...</p>
             </div>
         );
     }
 
-    if (!exercise) {
-        return (
-            <div className="text-center py-20">
-                <h2 className="text-2xl font-bold mb-2">Exercício não encontrado</h2>
-            </div>
-        );
+    if (!isValidId || !exercise) {
+        return <NotFound />;
     }
 
     return (
