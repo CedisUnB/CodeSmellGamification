@@ -1,0 +1,3 @@
+VPS_USER=deploy
+VPS_SUDO_PASSWORD=change-me
+VPS_SERVER=example.com
