@@ -86,7 +86,7 @@ class AuthService {
 
 ## Benefícios
 
-- ✅ Responsabilidades bem definidas
-- ✅ Facilita testes
-- ✅ Código mais organizado
-- ✅ Reutilização mais fácil
+- Responsabilidades bem definidas
+- Facilita testes
+- Código mais organizado
+- Reutilização mais fácil

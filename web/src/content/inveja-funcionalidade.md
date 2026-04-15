@@ -65,10 +65,9 @@ class Invoice {
 ## Técnicas de Refatoração
 
 - **Move Function** - Mover função para a classe correta
-- **Extract Function** - Extrair partes que não pertencem
 
 ## Benefícios
 
-- ✅ Dados e comportamento juntos
-- ✅ Melhor encapsulamento
-- ✅ Código mais intuitivo
+- Dados e comportamento juntos
+- Melhor encapsulamento
+- Código mais intuitivo

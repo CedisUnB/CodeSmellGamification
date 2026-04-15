@@ -71,12 +71,10 @@ class Money {
 ## Técnicas de Refatoração
 
 - **Replace Primitive with Object** - Substituir primitivo por objeto
-- **Introduce Parameter Object** - Agrupar parâmetros
-- **Replace Type Code with Class** - Substituir código de tipo
 
 ## Benefícios
 
-- ✅ Validação centralizada
-- ✅ Comportamento junto com dados
-- ✅ Código mais expressivo
-- ✅ Evita duplicação
+- Validação centralizada
+- Comportamento junto com dados
+- Código mais expressivo
+- Evita duplicação

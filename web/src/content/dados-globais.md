@@ -1,6 +1,6 @@
 ---
 title: "Dados Globais"
-description: "Variáveis globais que podem ser modificadas de qualquer lugar"
+description: "Presença de variáveis globais que podem ser modificadas de qualquer lugar"
 category: "change-preventers"
 icon: "🌍"
 ---
@@ -54,12 +54,10 @@ const appState = new AppState();
 ## Técnicas de Refatoração
 
 - **Encapsulate Variable** - Encapsular variáveis globais
-- **Move Function** - Mover funções para o contexto correto
-- **Module Pattern** - Usar módulos para encapsulamento
 
 ## Benefícios
 
-- ✅ Controle sobre modificações
-- ✅ Facilita debugging
-- ✅ Testes mais previsíveis
-- ✅ Reduz acoplamento
+- Controle sobre modificações
+- Facilita debugging
+- Testes mais previsíveis
+- Reduz acoplamento
