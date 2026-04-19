@@ -71,14 +71,22 @@ export default function FarejadorDetail() {
     useEffect(() => {
         if (!exercise) return;
 
+        // Verifica se todas as dicas já foram pedidas
+        const allTipsReceived = tips.linesCount !== null &&
+            tips.smellsCount !== null &&
+            tips.smellyLine !== null;
+
         const timer = setTimeout(() => {
-            if (selectedLines.length === 0 && dogState === DEVDOG_STATES.FAREJANDO && !hasSubmitted) {
+            if (selectedLines.length === 0 &&
+                dogState === DEVDOG_STATES.FAREJANDO &&
+                !hasSubmitted &&
+                !allTipsReceived) {
                 setDogState(DEVDOG_STATES.PIDAO);
             }
-        }, 15000);
+        }, 20000);
 
         return () => clearTimeout(timer);
-    }, [selectedLines, dogState, exercise, hasSubmitted]);
+    }, [selectedLines, dogState, exercise, hasSubmitted, tips]);
 
     // Atualiza estado do DevDog baseado nas ações do usuário
     useEffect(() => {
