@@ -6,7 +6,7 @@ import DevDogSentado from '../assets/sentado.svg';
 import DevDogMorto from '../assets/morto.svg';
 
 export default function ResultPopup({ result, onClose, tips }) {
-    const { correctLines, correctSmells, score } = result;
+    const { correctLines, correctSmells, score, bonus } = result;
 
     // Calcula estrelas baseado no score
     const getStars = () => {
@@ -19,45 +19,54 @@ export default function ResultPopup({ result, onClose, tips }) {
 
     // Define mensagem e bônus baseado no desempenho
     const getFeedback = () => {
-        if (score === 100) {
+        if (bonus == 5) {
             return {
                 title: "Perfeito!",
                 message: "Você arrasou! Tem um faro afiado para maus cheiros!",
                 bonus: 5,
                 image: DevDogCarinho,
-                imageAlt: "DevDog feliz"
+                imageAlt: "DevDog recebendo carinho"
             };
-        } else if (score >= 80) {
+        } else if (bonus == 4) {
             return {
                 title: "Mandou Bem!",
                 message: "Bom trabalho! Continue treinando seu faro!",
                 bonus: 4,
                 image: DevDogCarinho,
-                imageAlt: "DevDog contente"
+                imageAlt: "DevDog recebendo carinho"
             };
-        } else if (score >= 60) {
+        } else if (bonus == 3) {
             return {
                 title: "Quase lá!",
                 message: "Você identificou alguns problemas. Continue praticando!",
                 bonus: 3,
                 image: DevDogSentado,
-                imageAlt: "DevDog pensativo"
+                imageAlt: "DevDog sentado"
             };
-        } else if (score >= 40) {
+
+        } else if (bonus == 2) {
             return {
                 title: "Vamos treinar mais!",
-                message: "Seu faro ainda está se desenvolvendo. Tente novamente!",
+                message: "Você ainda pode melhorar. Tente novamente!",
                 bonus: 2,
                 image: DevDogMorto,
-                imageAlt: "DevDog triste"
+                imageAlt: "DevDog morto"
+            };
+        } else if (bonus == 1) {
+            return {
+                title: "Tá lascado!",
+                message: "Vamos treinar mais! Tente novamente!",
+                bonus: 2,
+                image: DevDogMorto,
+                imageAlt: "DevDog morto"
             };
         } else {
             return {
                 title: "Eita!",
                 message: "Não foi dessa vez. Que tal pedir uma dica e tentar novamente?",
-                bonus: 1,
+                bonus: 0,
                 image: DevDogMorto,
-                imageAlt: "DevDog desanimado"
+                imageAlt: "DevDog morto"
             };
         }
     };

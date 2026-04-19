@@ -101,6 +101,7 @@ class AttemptController {
         correctSmells: correctSmellsCount,
         matchedLines,
         score,
+        bonus,
         user
       })
 
