@@ -18,7 +18,7 @@ const DEVDOG_STATES = {
 
 export default function FarejadorDetail() {
     const { id } = useParams();
-    const { refreshUser } = useUser();
+    const { updateUser } = useUser();
     const { token } = useContext(AuthContext);
     const { makeAttempt } = ApiService(token);
     const [exercise, setExercise] = useState(null);
@@ -116,7 +116,7 @@ export default function FarejadorDetail() {
                 !correctLinesFromBackend.includes(item.line)
             );
 
-            refreshUser();
+            updateUser(response.data.user);
 
             setCorrectLines(correct);
             setIncorrectLines(incorrect);
