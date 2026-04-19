@@ -4,7 +4,7 @@ import { ApiService } from '../../services/ApiService';
 import { AuthContext } from '../../contexts/AuthContext';
 import ExerciseCode from '../../components/ExerciseCode';
 import ExerciseInfo from '../../components/ExerciseInfo';
-import { FaForward } from 'react-icons/fa';
+import { FaForward, FaRedo } from 'react-icons/fa';
 import ResultPopup from '../../components/ResultPopup';
 import { useUser } from '../../contexts/UserContext';
 import NotFound from '../NotFound';
@@ -12,7 +12,8 @@ import NotFound from '../NotFound';
 const DEVDOG_STATES = {
     FAREJANDO: 'farejando',
     FAREJADOR: 'farejador',
-    PIDAO: 'pidao'
+    PIDAO: 'pidao',
+    ESTUDIOSO: 'estudioso',
 };
 
 export default function FarejadorDetail() {
@@ -29,6 +30,7 @@ export default function FarejadorDetail() {
     const [incorrectLines, setIncorrectLines] = useState([]);
     const [attemptResult, setAttemptResult] = useState(null);
     const [showResult, setShowResult] = useState(false);
+    const [hasSubmitted, setHasSubmitted] = useState(false);
     const [tips, setTips] = useState({
         linesCount: null,
         smellsCount: null,
@@ -54,7 +56,6 @@ export default function FarejadorDetail() {
                 setExercise(data);
             } catch (error) {
                 console.error('Erro ao carregar exercício:', error);
-                // Se o erro for 404, o exercício não existe
                 if (error.response?.status === 404) {
                     setExercise(null);
                 }
@@ -71,42 +72,38 @@ export default function FarejadorDetail() {
         if (!exercise) return;
 
         const timer = setTimeout(() => {
-            if (selectedLines.length === 0 && dogState === DEVDOG_STATES.FAREJANDO) {
+            if (selectedLines.length === 0 && dogState === DEVDOG_STATES.FAREJANDO && !hasSubmitted) {
                 setDogState(DEVDOG_STATES.PIDAO);
             }
         }, 15000);
 
         return () => clearTimeout(timer);
-    }, [selectedLines, dogState, exercise]);
+    }, [selectedLines, dogState, exercise, hasSubmitted]);
 
     // Atualiza estado do DevDog baseado nas ações do usuário
     useEffect(() => {
-        if (selectedLines.length > 0) {
-            setDogState(DEVDOG_STATES.FAREJADOR);
-        } else if (selectedLines.length === 0) {
-            setDogState(DEVDOG_STATES.FAREJANDO);
+        if (!hasSubmitted) {
+            if (selectedLines.length > 0) {
+                setDogState(DEVDOG_STATES.FAREJADOR);
+            } else if (selectedLines.length === 0) {
+                setDogState(DEVDOG_STATES.FAREJANDO);
+            }
         }
-    }, [selectedLines]);
-
-    const handleLinesSelect = (lines) => {
-        setSelectedLines(lines);
-    };
+    }, [selectedLines, hasSubmitted]);
 
     const handleLineClassification = (smell) => {
-        const newClassifications = selectedLines.map(selectedLine => ({
-            line: selectedLine,
-            smell: smell,
-        }));
-
-        setClassifiedLines([...classifiedLines, ...newClassifications]);
+        // Remove classificações antigas das linhas selecionadas e adiciona as novas
+        setClassifiedLines(prev => [
+            ...prev.filter(item => !selectedLines.includes(item.line)),
+            ...selectedLines.map(line => ({ line, smell }))
+        ]);
         setSelectedLines([]);
         setDogState(DEVDOG_STATES.FAREJANDO);
     };
 
     const handleSubmit = async () => {
         if (classifiedLines.length === 0) return;
-        setCorrectLines([]);
-        setIncorrectLines([]);
+
         try {
             const response = await makeAttempt(exerciseId, { attempt: classifiedLines });
 
@@ -120,17 +117,30 @@ export default function FarejadorDetail() {
             );
 
             refreshUser();
+
             setCorrectLines(correct);
             setIncorrectLines(incorrect);
-            setSelectedLines([]);
-            setClassifiedLines([]);
             setAttemptResult({
                 ...response.data
             });
             setShowResult(true);
+            setHasSubmitted(true);
+            setDogState(DEVDOG_STATES.ESTUDIOSO);
+
         } catch (error) {
             console.error("Erro ao enviar tentativa:", error);
         }
+    };
+
+    const handleTryAgain = () => {
+        setSelectedLines([]);
+        setClassifiedLines([]);
+        setCorrectLines([]);
+        setIncorrectLines([]);
+        setAttemptResult(null);
+        setShowResult(false);
+        setHasSubmitted(false);
+        setDogState(DEVDOG_STATES.FAREJANDO);
     };
 
     const handleCloseResult = () => {
@@ -157,13 +167,22 @@ export default function FarejadorDetail() {
                 <h1 className="text-2xl sm:text-3xl font-bold text-neutral-800 dark:text-neutral-100">
                     {exercise.id}. {exercise.title}
                 </h1>
-                <button
-                    onClick={handleSubmit}
-                    disabled={classifiedLines.length === 0}
-                    className="px-4 py-2 rounded-lg bg-linear-to-r from-orange-500 to-orange-600 text-white font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                    <FaForward size={16} /> Enviar
-                </button>
+                {!hasSubmitted ? (
+                    <button
+                        onClick={handleSubmit}
+                        disabled={classifiedLines.length === 0}
+                        className="px-4 py-2 rounded-lg bg-linear-to-r from-orange-500 to-red-600 text-white font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                        <FaForward size={16} /> Enviar
+                    </button>
+                ) : (
+                    <button
+                        onClick={handleTryAgain}
+                        className="px-4 py-2 rounded-lg bg-linear-to-r from-red-500 to-orange-600 text-white font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                    >
+                        <FaRedo size={16} /> Tentar Novamente
+                    </button>
+                )}
             </div>
             <div className="flex flex-col lg:flex-row">
                 {/* Coluna Esquerda - Informações e DevDog */}
@@ -174,6 +193,7 @@ export default function FarejadorDetail() {
                         dogState={dogState}
                         onLineClassification={handleLineClassification}
                         selectedLines={selectedLines}
+                        correctLines={correctLines}
                         tips={tips}
                         setTips={setTips}
                     />
@@ -183,10 +203,12 @@ export default function FarejadorDetail() {
                     <ExerciseCode
                         code={exercise.code}
                         selectedLines={selectedLines}
-                        onLinesSelect={handleLinesSelect}
+                        onLinesSelect={setSelectedLines}
                         classifiedLines={classifiedLines}
                         correctLines={correctLines}
                         incorrectLines={incorrectLines}
+                        disabled={hasSubmitted}
+
                     />
                 </div>
             </div>

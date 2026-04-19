@@ -2,6 +2,7 @@ import { useState } from 'react';
 import DevDogFarejando from '../assets/farejando.svg';
 import DevDogFarejador from '../assets/farejador.svg';
 import DevDogPidao from '../assets/pidao.svg';
+import DevDogEstudioso from '../assets/sentado.svg';
 import SpeechBubble from './SpeechBubble';
 import { translate } from '../utils/enumTranslator';
 import { FaPaperPlane } from 'react-icons/fa';
@@ -11,7 +12,8 @@ import { SMELL_OPTIONS } from '../utils/enums';
 const DEVDOG_STATES = {
     FAREJANDO: 'farejando',
     FAREJADOR: 'farejador',
-    PIDAO: 'pidao'
+    PIDAO: 'pidao',
+    ESTUDIOSO: 'estudioso',
 };
 
 
@@ -32,6 +34,8 @@ export default function ExerciseTutor({ dogState, onLineClassification, selected
                 return DevDogFarejador;
             case DEVDOG_STATES.PIDAO:
                 return DevDogPidao;
+            case DEVDOG_STATES.ESTUDIOSO:
+                return DevDogEstudioso;
             default:
                 return DevDogFarejando;
         }
@@ -127,6 +131,28 @@ export default function ExerciseTutor({ dogState, onLineClassification, selected
                         <p className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300">
                             Se quiser te dou uma dica em troca de um deles...<br />
                             Vá até a aba Dicas e clique no pote.
+                        </p>
+                    </div>
+                </SpeechBubble>
+            </div>
+        );
+    }
+
+    if (dogState === DEVDOG_STATES.ESTUDIOSO) {
+        return (
+            <div className="flex flex-row items-center justify-center gap-2 h-70">
+                <img
+                    src={getDevDogImage()}
+                    alt="DevDog"
+                    className="h-30 object-contain hover:scale-105 transition-transform duration-300"
+                />
+                <SpeechBubble quotationMarks={false} tailSide="left">
+                    <div>
+                        <p className="text-base sm:text-lg font-semibold text-orange-800 dark:text-orange-300 mb-2">
+                            Esses são seus resultados!
+                        </p>
+                        <p className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300">
+                            Para fazer esse exercício de novo, clique no botão "Tentar Novamente".<br />
                         </p>
                     </div>
                 </SpeechBubble>

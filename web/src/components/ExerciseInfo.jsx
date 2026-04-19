@@ -20,6 +20,7 @@ export default function ExerciseInfo({
     dogState,
     onLineClassification,
     selectedLines,
+    correctLines,
     tips,
     setTips
 }) {
@@ -70,7 +71,10 @@ export default function ExerciseInfo({
                     />
                 )}
                 {activeTab === TABS.CLASSIFICACOES && (
-                    <TabClassification submissionsBySmell={submissionsBySmell} />
+                    <TabClassification
+                        submissionsBySmell={submissionsBySmell}
+                        correctLines={correctLines}
+                    />
                 )}
                 {activeTab === TABS.DICAS && (
                     <TabTips

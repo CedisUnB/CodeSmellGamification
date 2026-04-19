@@ -11,6 +11,7 @@ export default function ExerciseCode({
     classifiedLines,
     correctLines = [],
     incorrectLines = [],
+    disabled = false,
 }) {
     const [hoveredLine, setHoveredLine] = useState(null);
     const [copied, setCopied] = useState(false);
@@ -29,7 +30,7 @@ export default function ExerciseCode({
 
     // Atualiza seleção durante o drag
     const updateDragSelection = (endLine) => {
-        if (dragStartLine === null) return;
+        if (dragStartLine === null || disabled) return;
 
         const start = Math.min(dragStartLine, endLine);
         const end = Math.max(dragStartLine, endLine);
@@ -50,6 +51,8 @@ export default function ExerciseCode({
     };
 
     const handleLineClick = (lineNumber) => {
+        if (disabled) return;
+
         // Se não está arrastando, executa o clique
         if (!isDragging) {
             if (selectedLines.includes(lineNumber)) {
@@ -61,6 +64,8 @@ export default function ExerciseCode({
     };
 
     const handleMouseDown = (lineNumber) => {
+        if (disabled) return;
+
         setIsDragging(true);
         setDragStartLine(lineNumber);
 
@@ -71,7 +76,7 @@ export default function ExerciseCode({
 
     const handleMouseEnter = (lineNumber) => {
         setHoveredLine(lineNumber);
-        if (isDragging) {
+        if (isDragging && !disabled) {
             updateDragSelection(lineNumber);
         }
     };
@@ -83,6 +88,7 @@ export default function ExerciseCode({
     };
 
     const handleClearSelection = () => {
+        if (disabled) return;
         onLinesSelect([]);
     };
 
@@ -115,19 +121,23 @@ export default function ExerciseCode({
     };
 
     const getLineClassName = (line) => {
-        let className = 'flex flex-row align-middle px-4 py-1 font-mono text-sm transition-colors cursor-pointer select-none';
+        let className = 'flex flex-row align-middle px-4 py-1 font-mono text-sm transition-colors select-none';
 
-        if (line.isSelected) {
-            className += ' bg-orange-500/30 border-l-4 border-orange-500';
-        } else if (line.isClassified) {
-            className += ' bg-yellow-500/30';
-        } else if (line.isCorrect) {
+        if (!disabled) {
+            className += ' cursor-pointer';
+        }
+
+        if (line.isCorrect) {
             className += ' bg-green-500/30';
         } else if (line.isIncorrect) {
-            className += ' bg-red-500/30 line-through opacity-70';
-        } else if (hoveredLine === line.number) {
+            className += ' bg-red-500/30 opacity-70';
+        } else if (line.isSelected) {
+            className += ' bg-orange-500/30 border-l-2 border-orange-500';
+        } else if (line.isClassified) {
+            className += ' bg-yellow-500/30';
+        } else if (hoveredLine === line.number && !disabled) {
             className += ' bg-neutral-700 dark:bg-neutral-700';
-        } else {
+        } else if (!disabled) {
             className += ' hover:bg-neutral-100 dark:hover:bg-neutral-800';
         }
         return className;
@@ -149,7 +159,7 @@ export default function ExerciseCode({
                     </div>
 
                     <div className="flex gap-2">
-                        {selectedLines.length > 0 && (
+                        {selectedLines.length > 0 && !disabled && (
                             <Tooltip text="Limpar seleção">
                                 <button
                                     onClick={handleClearSelection}
