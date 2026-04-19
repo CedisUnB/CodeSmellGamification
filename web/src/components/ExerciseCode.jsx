@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaCode, FaCopy, FaCheck, FaUndoAlt } from 'react-icons/fa';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -14,6 +14,9 @@ export default function ExerciseCode({
 }) {
     const [hoveredLine, setHoveredLine] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStartLine, setDragStartLine] = useState(null);
+    const [dragMode, setDragMode] = useState(null); // 'add' ou 'remove'
 
     const lines = code ? code.trimStart().split('\n').map((content, index) => ({
         number: index + 1,
@@ -24,12 +27,59 @@ export default function ExerciseCode({
         isIncorrect: incorrectLines.some(s => s.line === index + 1)
     })) : [];
 
-    const handleLineClick = (lineNumber) => {
-        if (selectedLines.includes(lineNumber)) {
-            onLinesSelect(selectedLines.filter(l => l !== lineNumber));
-        } else {
-            onLinesSelect([...selectedLines, lineNumber].sort((a, b) => a - b));
+    // Atualiza seleção durante o drag
+    const updateDragSelection = (endLine) => {
+        if (dragStartLine === null) return;
+
+        const start = Math.min(dragStartLine, endLine);
+        const end = Math.max(dragStartLine, endLine);
+        const linesInRange = [];
+        for (let i = start; i <= end; i++) {
+            linesInRange.push(i);
         }
+
+        if (dragMode === 'add') {
+            // Adiciona linhas do range
+            const newSelection = [...new Set([...selectedLines, ...linesInRange])];
+            onLinesSelect(newSelection.sort((a, b) => a - b));
+        } else if (dragMode === 'remove') {
+            // Remove linhas do range
+            const newSelection = selectedLines.filter(line => !linesInRange.includes(line));
+            onLinesSelect(newSelection);
+        }
+    };
+
+    const handleLineClick = (lineNumber) => {
+        // Se não está arrastando, executa o clique
+        if (!isDragging) {
+            if (selectedLines.includes(lineNumber)) {
+                onLinesSelect(selectedLines.filter(l => l !== lineNumber));
+            } else {
+                onLinesSelect([...selectedLines, lineNumber].sort((a, b) => a - b));
+            }
+        }
+    };
+
+    const handleMouseDown = (lineNumber) => {
+        setIsDragging(true);
+        setDragStartLine(lineNumber);
+
+        // Define o modo baseado no estado atual da linha
+        const isSelected = selectedLines.includes(lineNumber);
+        setDragMode(isSelected ? 'remove' : 'add');
+    };
+
+    const handleMouseEnter = (lineNumber) => {
+        setHoveredLine(lineNumber);
+        if (isDragging) {
+            updateDragSelection(lineNumber);
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+        setDragStartLine(null);
+        setDragMode(null);
     };
 
     const handleClearSelection = () => {
@@ -46,6 +96,11 @@ export default function ExerciseCode({
         }
     };
 
+    useEffect(() => {
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => window.removeEventListener('mouseup', handleMouseUp);
+    }, [selectedLines]);
+
     const detectLanguage = (codeString) => {
         if (codeString.includes('function') || codeString.includes('=>') || codeString.includes('const ')) {
             return 'javascript';
@@ -60,7 +115,7 @@ export default function ExerciseCode({
     };
 
     const getLineClassName = (line) => {
-        let className = 'flex flex-row align-middle px-4 py-1 font-mono text-sm transition-colors cursor-pointer';
+        let className = 'flex flex-row align-middle px-4 py-1 font-mono text-sm transition-colors cursor-pointer select-none';
 
         if (line.isSelected) {
             className += ' bg-orange-500/30 border-l-4 border-orange-500';
@@ -78,31 +133,15 @@ export default function ExerciseCode({
         return className;
     };
 
-    const renderLineWithHighlight = (line) => {
-        const language = detectLanguage(line.content);
-
-        return (
-            <SyntaxHighlighter
-                language={language}
-                style={dracula}
-                customStyle={{
-                    background: 'transparent',
-                    padding: 0,
-                    margin: 0,
-                }}
-            >
-                {line.content || ' '}
-            </SyntaxHighlighter>
-        );
-    };
-
     return (
-        <div className="bg-neutral-800 dark:bg-neutral-800 rounded-r-2xl shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 h-200">
-
+        <div
+            className="bg-neutral-800 dark:bg-neutral-800 rounded-b-2xl lg:rounded-r-2xl lg:rounded-bl-none shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 h-200"
+            onMouseLeave={handleMouseUp}
+        >
             {/* Header do código */}
-            <div className="border-b border-neutral-200 dark:border-neutral-700 bg-orange-500">
+            <div className="border-b border-neutral-200 dark:border-neutral-700 bg-linear-to-r from-orange-500 to-red-500">
                 <div className="flex items-center justify-between px-4">
-                    <div className="px-4 py-3 text-sm font-medium transition-all text-bold text-neutral-100">
+                    <div className="px-4 py-3 text-sm font-medium text-white">
                         <div className="flex items-center gap-2">
                             <FaCode size={14} />
                             Código
@@ -110,22 +149,20 @@ export default function ExerciseCode({
                     </div>
 
                     <div className="flex gap-2">
-                        {/* Botão Limpar */}
                         {selectedLines.length > 0 && (
                             <Tooltip text="Limpar seleção">
                                 <button
                                     onClick={handleClearSelection}
-                                    className="text-neutral-300 hover:text-neutral-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+                                    className="text-white/70 hover:text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
                                 >
                                     <FaUndoAlt size={16} />
                                 </button>
                             </Tooltip>
                         )}
-                        {/* Botão Copiar */}
                         <Tooltip text="Copiar código">
                             <button
                                 onClick={handleCopyCode}
-                                className="text-neutral-300 hover:text-neutral-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+                                className="text-white/70 hover:text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
                             >
                                 {copied ? <FaCheck size={16} /> : <FaCopy size={16} />}
                             </button>
@@ -134,26 +171,34 @@ export default function ExerciseCode({
                 </div>
             </div>
 
-            {/* Área de código com numeração */}
-            <div className="overflow-auto">
-                <div className="max-h-208">
-                    {lines.map((line) => (
-                        <div
-                            key={line.number}
-                            className={getLineClassName(line)}
-                            onClick={() => handleLineClick(line.number)}
-                            onMouseEnter={() => setHoveredLine(line.number)}
-                            onMouseLeave={() => setHoveredLine(null)}
-                        >
-                            <span className="self-center flex justify-center w-4 text-right text-neutral-400 dark:text-neutral-500 select-none mr-4">
-                                {line.number}
-                            </span>
-                            <span >
-                                {renderLineWithHighlight(line)}
-                            </span>
-                        </div>
-                    ))}
-                </div>
+            {/* Área de código */}
+            <div className="overflow-auto h-[calc(100%-52px)]">
+                {lines.map((line) => (
+                    <div
+                        key={line.number}
+                        className={getLineClassName(line)}
+                        onClick={() => handleLineClick(line.number)}
+                        onMouseDown={() => handleMouseDown(line.number)}
+                        onMouseEnter={() => handleMouseEnter(line.number)}
+                    >
+                        <span className="self-center flex justify-center w-4 text-right text-neutral-400 dark:text-neutral-500 select-none mr-4">
+                            {line.number}
+                        </span>
+                        <span className="flex-1">
+                            <SyntaxHighlighter
+                                language={detectLanguage(line.content)}
+                                style={dracula}
+                                customStyle={{
+                                    background: 'transparent',
+                                    padding: 0,
+                                    margin: 0,
+                                }}
+                            >
+                                {line.content || ' '}
+                            </SyntaxHighlighter>
+                        </span>
+                    </div>
+                ))}
             </div>
         </div>
     );

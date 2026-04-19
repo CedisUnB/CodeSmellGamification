@@ -2,7 +2,7 @@
 title: "Dados Mutáveis"
 description: "TODO: Adicionar descrição rápida"
 category: "change-preventers"
-icon: "🔄"
+icon: "🎲"
 ---
 
 ## O que é?

@@ -2,7 +2,7 @@
 title: "Nome Misterioso"
 description: "Nomes de funções, variáveis e classes que não comunicam claramente sua finalidade"
 category: "bloaters"
-icon: "📛"
+icon: "🥸"
 ---
 
 ## O que é?
