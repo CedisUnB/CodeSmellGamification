@@ -7,74 +7,106 @@ icon: "🔢"
 
 ## O que é?
 
-Programadores frequentemente relutam em criar seus próprios tipos fundamentais para o domínio. Representar conceitos como dinheiro, telefone ou intervalos como tipos primitivos leva a código frágil e difícil de manter.
+Obsessão por primitivos ocorre quando o código utiliza tipos primitivos (strings, números, booleanos) para representar conceitos do domínio que seriam melhor expressos como objetos. Isso leva a código frágil, repetitivo e difícil de entender.
 
 ## Como identificar
 
-- Strings representando conceitos complexos
-- Validação de dados espalhada pelo código
-- Formatação repetida do mesmo tipo de dado
-- Código duplicado para tratar primitivos
+Você pode identificar obsessão por primitivos observando a presença de validações repetidas para o mesmo tipo de dado, formatações espalhadas pelo código, ou grupos de variáveis primitivas que representam um conceito único (como telefone com DDD e número separados).
+
+Esse mau cheiro é causado principalmente pela relutância em criar classes pequenas e pela praticidade inicial de usar tipos simples.
 
 ## Exemplo Ruim
 
 ```javascript
-// Telefone como string
-let phoneNumber = "11999999999";
+// Representação de telefone como string e número separados
+let ddd = "11";
+let numero = "999999999";
 
-function validatePhone(phone) {
-    return phone.length === 11 && /^\d+$/.test(phone);
+function validarTelefone(ddd, numero) {
+  if (ddd.length !== 2) return false;
+  if (numero.length !== 9) return false;
+  return true;
 }
 
-function formatPhone(phone) {
-    return `(${phone.slice(0,2)}) ${phone.slice(2,7)}-${phone.slice(7)}`;
+function formatarTelefone(ddd, numero) {
+  return `(${ddd}) ${numero.slice(0,5)}-${numero.slice(5)}`;
 }
 
-// Dinheiro como número
-let price = 19.90;
-let discount = 0.1;
-let finalPrice = price * (1 - discount);
+// Representação de dinheiro como número
+let preco = 19.90;
+let desconto = 10;
+let precoFinal = preco - (preco * desconto / 100);
+
+// Validação espalhada
+if (preco < 0) {
+  console.log("Preço inválido");
+}
 ```
 
 ## Como Refatorar
 
 ```javascript
-class PhoneNumber {
-    constructor(value) {
-        if (!this.isValid(value)) {
-            throw new Error('Telefone inválido');
-        }
-        this.value = value;
-    }
-    
-    isValid(phone) {
-        return phone.length === 11 && /^\d+$/.test(phone);
-    }
-    
-    format() {
-        return `(${this.value.slice(0,2)}) ${this.value.slice(2,7)}-${this.value.slice(7)}`;
-    }
+class Telefone {
+  constructor(ddd, numero) {
+    this.ddd = ddd;
+    this.numero = numero;
+  }
+  
+  validar() {
+    return this.ddd.length === 2 && this.numero.length === 9;
+  }
+  
+  formatar() {
+    return `(${this.ddd}) ${this.numero.slice(0,5)}-${this.numero.slice(5)}`;
+  }
 }
 
-class Money {
-    constructor(value, currency = 'BRL') {
-        this.value = value;
-        this.currency = currency;
-    }
-    
-    applyDiscount(discount) {
-        return new Money(this.value * (1 - discount.value), this.currency);
-    }
+class Dinheiro {
+  constructor(valor, moeda = "BRL") {
+    this.valor = valor;
+    this.moeda = moeda;
+  }
+  
+  aplicarDesconto(percentual) {
+    const novoValor = this.valor - (this.valor * percentual / 100);
+    return new Dinheiro(novoValor, this.moeda);
+  }
+  
+  ehValido() {
+    return this.valor >= 0;
+  }
+  
+  formatar() {
+    return `${this.moeda} ${this.valor.toFixed(2)}`;
+  }
 }
+
+const telefone = new Telefone("11", "999999999");
+if (telefone.validar()) {
+  console.log(telefone.formatar());
+}
+
+const preco = new Dinheiro(19.90);
+const precoFinal = preco.aplicarDesconto(10);
 ```
 
 ## Técnicas de Refatoração
 
-- **Replace Primitive with Object** - Substituir primitivo por objeto
+As seguintes técnicas são indicadas para refatorar obsessão por primitivos:
+
+- **Replace Primitive with Object**: Substitua o tipo primitivo por uma classe que encapsule o comportamento relacionado.
+- **Introduce Parameter Object**: Agrupe parâmetros primitivos relacionados em um objeto.
+- **Replace Type Code with Class**: Substitua códigos de tipo (números ou strings representando tipos) por classes.
 
 ## Benefícios
 
-- Validação centralizada
-- Comportamento junto com dados
-- Código mais expressivo
-- Evita duplicação
+Após a refatoração os benefícios são:
+
+- Comportamento relacionado aos dados fica centralizado na classe
+- Elimina validações e formatações repetidas pelo código
+- Código mais expressivo e auto-documentado
+- Facilita a evolução e manutenção do domínio
+
+## Referências
+
+FOWLER, Martin; BECK, Kent. **Refatoração: Aperfeiçoando o Design de Códigos Existentes**. 2. ed. São Paulo: Novatec, 2018.
