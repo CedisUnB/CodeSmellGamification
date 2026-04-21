@@ -53,7 +53,6 @@ export default function ExerciseInfo({
     const totalSmellsFound = Object.keys(submissionsBySmell).length;
     const totalLinesFound = classifiedLines.length;
 
-
     return (
         <div className="bg-white dark:bg-neutral-800 rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 flex flex-col h-200">
             {/* Header com abas */}
