@@ -1,9 +1,10 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaPaw, FaUserCircle, FaHome, FaSearch, FaGraduationCap } from "react-icons/fa";
 import { useState } from "react";
-import PetiscoCounter from "./PetiscoCounter";
 import { useAuth } from "../contexts/AuthContext";
 import { useUser } from "../contexts/UserContext";
+import PetiscoCounter from "./PetiscoCounter";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -66,6 +67,9 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             {/* Petiscos */}
             <PetiscoCounter petiscos={user?.coins || 0} />
+
+            {/* Tema */}
+            <ThemeToggle />
 
             {/* Usuário Logado */}
             {user && !user.isAnonymous ? (
