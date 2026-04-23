@@ -23,8 +23,8 @@ export default function SearchAndFilter({
             <div className="relative">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 text-sm sm:text-base" />
                 <input
+                    id="search"
                     type="text"
-                    name="search"
                     placeholder={searchPlaceholder}
                     value={searchTerm}
                     onChange={(e) => onSearchChange(e.target.value)}

@@ -90,7 +90,7 @@ export default function ExerciseInfo({
             </div>
 
             {/* DevDog com instruções */}
-            <div className="p-5 border-t border-neutral-200 dark:border-neutral-700">
+            <div className="p-5">
                 <ExerciseTutor
                     dogState={dogState}
                     onLineClassification={onLineClassification}

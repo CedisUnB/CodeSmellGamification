@@ -80,6 +80,7 @@ export default function ExerciseTutor({ dogState, onLineClassification, selected
 
                         <div className="flex">
                             <select
+                                id="smell"
                                 value={selectedSmell}
                                 onChange={(e) => setSelectedSmell(e.target.value)}
                                 className="flex-1 px-3 py-2 bg-white dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"

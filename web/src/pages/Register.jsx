@@ -73,11 +73,13 @@ export default function Register() {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     {/* Campo Nome */}
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label htmlFor="name" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             <FaUser className="inline mr-2 text-neutral-400" />
                             Nome
                         </label>
                         <input
+                            id="name"
+                            autoComplete="name"
                             {...register('name', {
                                 required: 'Nome é obrigatório',
                                 minLength: {
@@ -96,11 +98,13 @@ export default function Register() {
 
                     {/* Campo Email */}
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             <FaEnvelope className="inline mr-2 text-neutral-400" />
                             Email
                         </label>
                         <input
+                            id="email"
+                            autoComplete="email"
                             {...register('email', {
                                 required: 'Email é obrigatório',
                                 pattern: {
@@ -119,12 +123,14 @@ export default function Register() {
 
                     {/* Campo Senha */}
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label htmlFor="password" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             <FaLock className="inline mr-2 text-neutral-400" />
                             Senha
                         </label>
                         <div className="relative">
                             <input
+                                id="password"
+                                autoComplete="off"
                                 {...register('password', {
                                     required: 'Senha é obrigatória',
                                     minLength: {
@@ -151,12 +157,14 @@ export default function Register() {
 
                     {/* Campo Confirmar Senha */}
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             <FaLock className="inline mr-2 text-neutral-400" />
                             Confirmar senha
                         </label>
                         <div className="relative">
                             <input
+                                id="confirmPassword"
+                                autoComplete="off"
                                 {...register('confirmPassword', {
                                     required: 'Confirme sua senha',
                                     validate: value => value === password || 'As senhas não coincidem'
