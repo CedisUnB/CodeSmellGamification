@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { FaCode, FaCopy, FaCheck, FaUndoAlt } from 'react-icons/fa';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Tooltip from './Tooltip';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function ExerciseCode({
     code,
@@ -18,6 +19,7 @@ export default function ExerciseCode({
     const [isDragging, setIsDragging] = useState(false);
     const [dragStartLine, setDragStartLine] = useState(null);
     const [dragMode, setDragMode] = useState(null); // 'add' ou 'remove'
+    const codeStyle = useTheme().isDark ? oneDark : oneLight;
 
     const lines = code ? code.trimStart().split('\n').map((content, index) => ({
         number: index + 1,
@@ -136,7 +138,7 @@ export default function ExerciseCode({
         } else if (line.isClassified) {
             className += ' bg-yellow-500/30';
         } else if (hoveredLine === line.number && !disabled) {
-            className += ' bg-neutral-700 dark:bg-neutral-700';
+            className += ' bg-neutral-200 dark:bg-neutral-700';
         } else if (!disabled) {
             className += ' hover:bg-neutral-100 dark:hover:bg-neutral-800';
         }
@@ -145,7 +147,7 @@ export default function ExerciseCode({
 
     return (
         <div
-            className="bg-neutral-800 dark:bg-neutral-800 rounded-b-2xl lg:rounded-r-2xl lg:rounded-bl-none shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 h-200"
+            className="bg-neutral-100 dark:bg-neutral-800 rounded-b-2xl lg:rounded-r-2xl lg:rounded-bl-none shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 h-200"
             onMouseLeave={handleMouseUp}
         >
             {/* Header do código */}
@@ -197,11 +199,16 @@ export default function ExerciseCode({
                         <span className="flex-1">
                             <SyntaxHighlighter
                                 language={detectLanguage(line.content)}
-                                style={dracula}
+                                style={codeStyle}
                                 customStyle={{
                                     background: 'transparent',
-                                    padding: 0,
-                                    margin: 0,
+                                    padding: '0',
+                                    margin: '0',
+                                }}
+                                codeTagProps={{
+                                    style: {
+                                        background: 'transparent',
+                                    }
                                 }}
                             >
                                 {line.content || ' '}

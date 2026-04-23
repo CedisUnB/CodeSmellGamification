@@ -1,8 +1,7 @@
-import ReactMarkdown from 'react-markdown';
-import MarkdownComponents from '../utils/markdownStyles';
 import { FaChartLine, FaTag } from 'react-icons/fa';
 import { getAlternateColor } from '../utils/colorizer';
 import { translate } from '../utils/enumTranslator';
+import MarkdownRenderer from './MarkdownRenderer';
 
 export default function TabAbout({ exercise, totalSmellsFound, totalLinesFound }) {
 
@@ -18,9 +17,7 @@ export default function TabAbout({ exercise, totalSmellsFound, totalLinesFound }
             {/* Descrição */}
             <div className="p-5 border-b border-neutral-100 dark:border-neutral-700">
                 <div className="prose prose-sm max-w-none">
-                    <ReactMarkdown components={MarkdownComponents}>
-                        {exercise.description}
-                    </ReactMarkdown>
+                    <MarkdownRenderer content={exercise.description} />
                 </div>
             </div>
 
