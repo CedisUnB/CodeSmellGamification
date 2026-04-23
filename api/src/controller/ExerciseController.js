@@ -226,15 +226,22 @@ class ExerciseController {
       }
 
       // 6. Desconta as coins do usuário
-      await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: { id: userId },
-        data: { coins: { decrement: TIP_COST } }
+        data: { coins: { decrement: TIP_COST } },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          coins: true,
+          isAnonymous: true,
+        }
       })
 
       return res.status(200).json({
         tip,
         tipNumber,
-        remainingCoins: user.coins - TIP_COST
+        user: updatedUser
       })
 
     } catch (error) {

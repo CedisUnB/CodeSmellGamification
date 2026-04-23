@@ -25,11 +25,10 @@ router.get('/user/me', verifyAuth, user.getMe)
 router.post('/user/coin', verifyAuth, user.addCoins)
 
 // Exercise
-// router.post('/exercise', exercise.create) // TODO: Somente admin, colocar no banco direto?
 router.get('/exercise', verifyAuth, exercise.list)
 router.get('/exercise/:id', validateIdParam, verifyAuth, exercise.getById)
 router.get('/exercise/:id/tip', validateIdParam, verifyAuth, exercise.getTip)
-router.get('/exercise/:id/statistics', validateIdParam, verifyAuth, exercise.getStatistics) // TODO: Melhorar
+router.get('/exercise/:id/statistics', validateIdParam, verifyAuth, exercise.getStatistics)
 
 // Attempt
 router.post('/exercise/:id/attempt', validateIdParam, verifyAuth, attempt.makeAttempt)

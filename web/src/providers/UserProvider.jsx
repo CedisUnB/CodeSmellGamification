@@ -42,17 +42,6 @@ const UserProvider = ({ children }) => {
         loadUser();
     }, [token, sessionId, updateToken]);
 
-    const refreshUser = async () => {
-        if (!token) return;
-        const { getMe } = ApiService(token);
-        try {
-            const { data } = await getMe();
-            setUser(data);
-        } catch (error) {
-            console.error("Erro ao atualizar usuário:", error);
-        }
-    };
-
     const updateUser = (data) => {
         if (!token) return;
         try {
@@ -63,7 +52,7 @@ const UserProvider = ({ children }) => {
     };
 
     return (
-        <UserContext.Provider value={{ user, loading, refreshUser, updateUser }}>
+        <UserContext.Provider value={{ user, loading, updateUser }}>
             {children}
         </UserContext.Provider>
     );
