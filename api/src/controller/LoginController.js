@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken'
-
-//TODO: verificar se tem que usar o bcrypt ou eu posso usar o login do google como funciona aqui
-
+import { comparePassword, hashPassword } from '../utils/password.js'
 
 const prisma = new PrismaClient()
 
@@ -45,8 +43,7 @@ class LoginController {
                 return response.status(404).json({ error: 'Usuário não encontrado' })
             }
 
-            // const match = await bcrypt.compare(password, user.password)
-            const match = password === user.password // TODO: Criptogtafar a senha e comparar
+            const match = await comparePassword(password, user.password)
             if (!match) {
                 return response.status(401).json({ error: 'Senha invalida' })
             }
@@ -114,6 +111,8 @@ class LoginController {
             return response.status(400).json({ error: 'Email já registrado' })
         }
 
+        const hashedPassword = await hashPassword(password)
+
         try {
             let newUser
             let transferInfo = null
@@ -133,7 +132,7 @@ class LoginController {
                         data: {
                             name,
                             email,
-                            password, // TODO: Criptografar
+                            password: hashedPassword,
                             isAnonymous: false,
                             coins: anonymousUser.coins + 10 // Bônus de registro
                         }
@@ -153,7 +152,7 @@ class LoginController {
                     data: {
                         name,
                         email,
-                        password, // TODO: Criptografar
+                        password: hashedPassword,
                         coins: 10,
                         isAnonymous: false
                     }
