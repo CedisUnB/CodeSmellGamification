@@ -147,6 +147,7 @@ function gerarRelatorioDevolucoes(transacoes) {
           { smellType: SmellType.DUPLICATED_CODE, line: 12 },
           { smellType: SmellType.DUPLICATED_CODE, line: 13 },
           { smellType: SmellType.DUPLICATED_CODE, line: 14 },
+          { smellType: SmellType.DUPLICATED_CODE, line: 15 },
           { smellType: SmellType.DUPLICATED_CODE, line: 24 },
           { smellType: SmellType.DUPLICATED_CODE, line: 25 },
           { smellType: SmellType.DUPLICATED_CODE, line: 26 },
@@ -345,7 +346,7 @@ A função realiza múltiplos cálculos: bônus por cargo, adicional por horas e
       description: `O sistema possui funções para gerenciar reservas de hotel. As funções \`calcularDiarias()\` e \`calcularMulta()\` recebem os mesmos parâmetros repetidamente: data de check-in, data de check-out e número de hóspedes.
 
 Além disso, ambas as funções contêm um trecho idêntico que calcula a quantidade de dias entre as duas datas. Esse cálculo aparece nos dois lugares.`,
-      difficulty: Difficulty.MEDIUM,
+      difficulty: Difficulty.HARD,
       code: `function calcularDiarias(checkIn, checkOut, hóspedes) {
   // Calcula número de diárias
   const umDia = 24 * 60 * 60 * 1000;
@@ -377,6 +378,8 @@ function calcularMulta(checkIn, checkOut, hóspedes) {
         create: [
           { smellType: SmellType.DATA_CLUMPS, line: 1 },
           { smellType: SmellType.DATA_CLUMPS, line: 17 },
+          { smellType: SmellType.COMMENTS, line: 2 },
+          { smellType: SmellType.COMMENTS, line: 18 },
           { smellType: SmellType.DUPLICATED_CODE, line: 3 },
           { smellType: SmellType.DUPLICATED_CODE, line: 4 },
           { smellType: SmellType.DUPLICATED_CODE, line: 5 },
@@ -392,7 +395,7 @@ function calcularMulta(checkIn, checkOut, hóspedes) {
     data: {
       title: "Registro de Temperatura",
       description: `O sistema armazena medições de temperatura de sensores. As funções \`classificarTemperatura()\` e \`ajustarAlerta()\` recebem a temperatura como um número simples e um código de unidade como texto ("C" para Celsius, "F" para Fahrenheit).`,
-      difficulty: Difficulty.MEDIUM,
+      difficulty: Difficulty.HARD,
       code: `function classificarTemperatura(valor, unidade) {
   let celsius = valor;
   
