@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaPaw, FaUserCircle, FaHome, FaSearch, FaGraduationCap, FaChevronDown, FaSignOutAlt, FaSign, FaSignInAlt } from "react-icons/fa";
+import { FaPaw, FaUserCircle, FaHome, FaSearch, FaGraduationCap, FaChevronDown, FaSignOutAlt } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useUser } from "../contexts/UserContext";
@@ -56,6 +56,11 @@ export default function Navbar() {
     return user.name.charAt(0).toUpperCase();
   };
 
+  const getFirstName = (fullName) => {
+    if (!fullName) return '';
+    return fullName.split(' ')[0];
+  };
+
   return (
     <nav className="fixed top-0 left-0 w-full backdrop-blur-md shadow-sm z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -108,7 +113,7 @@ export default function Navbar() {
                     {getInitial()}
                   </div>
                   <span className="hidden sm:inline text-sm font-medium text-neutral-700 dark:text-neutral-200">
-                    {user.name}
+                    {getFirstName(user.name)}
                   </span>
                   <FaChevronDown
                     className={`text-neutral-400 text-xs transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`}

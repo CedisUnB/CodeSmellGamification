@@ -28,7 +28,7 @@ export default function TabStatistics({ exerciseId }) {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-full p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-4 border-teal-500 border-t-transparent"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent"></div>
             </div>
         );
     }
@@ -78,7 +78,7 @@ export default function TabStatistics({ exerciseId }) {
             {/* Minhas estatísticas */}
             <div>
                 <div className="flex items-center gap-2 mb-3">
-                    <FaUser size={14} className="text-teal-500" />
+                    <FaUser size={14} className="text-orange-500" />
                     <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Minhas estatísticas</h3>
                 </div>
 
@@ -111,7 +111,7 @@ export default function TabStatistics({ exerciseId }) {
             {/* Estatísticas da comunidade */}
             <div>
                 <div className="flex items-center gap-2 mb-3">
-                    <FaUsers size={14} className="text-teal-500" />
+                    <FaUsers size={14} className="text-orange-500" />
                     <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Estatísticas da comunidade</h3>
                 </div>
 
