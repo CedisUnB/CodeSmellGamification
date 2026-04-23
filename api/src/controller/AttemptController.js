@@ -70,7 +70,8 @@ class AttemptController {
           exerciseId: exerciseId,
           correctLines: correctCount,
           correctSmells: correctSmellsCount,
-          attemptData: attempt
+          attemptData: attempt,
+          score: score
         }
       })
 
