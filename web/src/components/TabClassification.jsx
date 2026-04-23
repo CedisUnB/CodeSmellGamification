@@ -1,8 +1,8 @@
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaTrashAlt, FaMinusCircle, FaTimesCircle } from 'react-icons/fa';
 import { translate } from '../utils/enumTranslator';
+import Tooltip from './Tooltip';
 
-export default function TabClassification({ submissionsBySmell, correctLines }) {
-    const hasSubmitted = correctLines && correctLines.length > 0;
+export default function TabClassification({ submissionsBySmell, correctLines, onDeleteSmell, hasSubmitted }) {
     const correctLinesSet = hasSubmitted ? new Set(correctLines.map(item => item.line)) : null;
 
     const getLineNumberColor = (line) => {
@@ -10,6 +10,24 @@ export default function TabClassification({ submissionsBySmell, correctLines }) 
         return correctLinesSet.has(line)
             ? 'text-green-700 dark:text-green-400'
             : 'text-red-700 dark:text-red-400';
+    };
+
+    const getStatusIcon = (lines) => {
+        if (!hasSubmitted) return null;
+
+        const allLinesCorrect = lines.every(line => correctLinesSet.has(line));
+        if (allLinesCorrect) return <FaCheckCircle className="text-green-500 text-xs" />;
+
+        const anyLineCorrect = lines.some(line => correctLinesSet.has(line));
+        if (anyLineCorrect) return <FaMinusCircle className="text-yellow-500 text-xs" />;
+
+        return <FaTimesCircle className="text-red-500 text-xs" />;
+    };
+
+    const handleDelete = (smell) => {
+        if (onDeleteSmell) {
+            onDeleteSmell(smell);
+        }
     };
 
     if (Object.keys(submissionsBySmell).length === 0) {
@@ -42,8 +60,25 @@ export default function TabClassification({ submissionsBySmell, correctLines }) 
                         className="group flex items-center justify-between p-2 rounded-lg bg-neutral-50 dark:bg-neutral-700/30 hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors"
                     >
                         <div className="flex flex-none items-center gap-2 mr-4">
-                            {hasSubmitted && <div className="w-2 h-2 rounded-full bg-orange-400" />}
-                            {!hasSubmitted && <div className="w-2 h-2 rounded-full bg-amber-300" />}
+                            {hasSubmitted && (
+                                <div className="w-4 flex items-center justify-center">
+                                    {getStatusIcon(lines)}
+                                </div>
+                            )}
+                            {!hasSubmitted && (
+                                <>
+                                    <div className="w-2 h-2 rounded-full bg-amber-300 group-hover:hidden" />
+                                    <Tooltip text="Limpar classificação">
+                                        <button
+                                            onClick={() => handleDelete(smell)}
+                                            className="hidden group-hover:flex items-center justify-center mr-1 transition-opacity duration-200 text-neutral-400 hover:text-red-500"
+                                        >
+                                            <FaTrashAlt size={12} />
+                                        </button>
+                                    </Tooltip>
+                                </>
+                            )}
+
                             <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
                                 {translate(smell)}
                             </span>

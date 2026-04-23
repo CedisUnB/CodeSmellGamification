@@ -155,6 +155,10 @@ export default function FarejadorDetail() {
         setShowResult(false);
     };
 
+    const handleDeleteClassification = (newClassifiedLines) => {
+        setClassifiedLines(newClassifiedLines);
+    };
+
     if (loading) {
         return (
             <div className="flex flex-col justify-center items-center h-64">
@@ -198,12 +202,14 @@ export default function FarejadorDetail() {
                     <ExerciseInfo
                         exercise={exercise}
                         classifiedLines={classifiedLines}
+                        onDeleteClassification={handleDeleteClassification}
                         dogState={dogState}
                         onLineClassification={handleLineClassification}
                         selectedLines={selectedLines}
                         correctLines={correctLines}
                         tips={tips}
                         setTips={setTips}
+                        hasSubmitted={hasSubmitted}
                     />
                 </div>
                 {/* Coluna Direita - Código */}

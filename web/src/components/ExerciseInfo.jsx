@@ -17,12 +17,14 @@ const TABS = {
 export default function ExerciseInfo({
     exercise,
     classifiedLines,
+    onDeleteClassification,
     dogState,
     onLineClassification,
     selectedLines,
     correctLines,
     tips,
-    setTips
+    setTips,
+    hasSubmitted
 }) {
     const [activeTab, setActiveTab] = useState(TABS.SOBRE);
     const tabsConfig = [
@@ -53,6 +55,13 @@ export default function ExerciseInfo({
     const totalSmellsFound = Object.keys(submissionsBySmell).length;
     const totalLinesFound = classifiedLines.length;
 
+    const handleDeleteSmell = (smellToDelete) => {
+        const newClassifiedLines = classifiedLines.filter(
+            item => item.smell !== smellToDelete
+        );
+        onDeleteClassification(newClassifiedLines);
+    };
+
     return (
         <div className="bg-white dark:bg-neutral-800 rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 flex flex-col h-200">
             {/* Header com abas */}
@@ -73,6 +82,8 @@ export default function ExerciseInfo({
                     <TabClassification
                         submissionsBySmell={submissionsBySmell}
                         correctLines={correctLines}
+                        onDeleteSmell={handleDeleteSmell}
+                        hasSubmitted={hasSubmitted}
                     />
                 )}
                 {activeTab === TABS.DICAS && (
