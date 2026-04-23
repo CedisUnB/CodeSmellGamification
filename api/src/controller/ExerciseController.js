@@ -77,7 +77,20 @@ class ExerciseController {
       recommended: exercise.id === recommendedId
     }))
 
-    return res.json(formattedExercises)
+    const recommendedList = formattedExercises.filter(ex => ex.recommended);
+    const nonRecommendedList = formattedExercises.filter(ex => !ex.recommended);
+
+    const difficultyOrder = { EASY: 1, MEDIUM: 2, HARD: 3 };
+    nonRecommendedList.sort((a, b) => {
+      if (a.difficulty !== b.difficulty) {
+        return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty];
+      }
+      return a.id - b.id;
+    });
+
+    const sortedExercises = [...recommendedList, ...nonRecommendedList];
+
+    return res.json(sortedExercises)
   }
 
   async getById(req, res) {
