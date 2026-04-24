@@ -1,4 +1,3 @@
-// pages/FarejadorList.jsx
 import { useContext, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ApiService } from '../../services/ApiService';
@@ -103,7 +102,7 @@ export default function FarejadorList() {
                             Use seu faro de dev para encontrar os maus cheiros!
                         </p>
                     </SpeechBubble>
-                    <img src={DevDog} alt="DevDog" className="w-48 sm:w-64 lg:w-72 object-contain hover:scale-105 transition-transform duration-300" />
+                    <img src={DevDog} alt="DevDog" className="w-48 sm:w-64 object-contain hover:scale-105 transition-transform duration-300" />
                 </div>
 
                 <div className="lg:w-2/3 xl:w-3/4 bg-white dark:bg-neutral-800 rounded-2xl shadow-xl overflow-hidden flex flex-col">
@@ -118,9 +117,9 @@ export default function FarejadorList() {
                                 <table className="w-full min-w-125 sm:min-w-0">
                                     <thead className="bg-linear-to-r from-orange-500 to-red-500">
                                         <tr>
-                                            <th className="w-16 sm:w-20 px-3 sm:px-6 py-3 sm:py-4 text-center text-white font-semibold text-sm sm:text-base">Status</th>
-                                            <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white font-semibold text-sm sm:text-base">Exercício</th>
-                                            <th className="w-20 sm:w-24 px-3 sm:px-6 py-3 sm:py-4 text-center text-white font-semibold text-sm sm:text-base">Nível</th>
+                                            <th className="w-16 sm:w-20 px-3 sm:px-6 py-2 sm:py-3 text-center text-white font-semibold text-sm sm:text-base">Status</th>
+                                            <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-white font-semibold text-sm sm:text-base">Exercício</th>
+                                            <th className="w-20 sm:w-24 px-3 sm:px-6 py-2 sm:py-3 text-center text-white font-semibold text-sm sm:text-base">Nível</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">

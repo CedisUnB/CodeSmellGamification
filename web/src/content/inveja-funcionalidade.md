@@ -7,67 +7,92 @@ icon: "💚"
 
 ## O que é?
 
-Quando uma função em um módulo comunica-se mais com elementos de outro módulo do que com os do próprio, ela sofre de "inveja". A função "inveja" os dados de outra classe.
+Inveja de funcionalidade ocorre quando uma função em um módulo se comunica mais com elementos de outro módulo do que com os do próprio módulo. A função parece "invejar" os dados de outra classe, indicando que ela provavelmente deveria estar na classe que mais utiliza.
 
 ## Como identificar
 
-- Função que acessa muitos getters de outro objeto
-- Método que usa mais dados de outra classe
-- Chamadas frequentes a métodos de outro objeto
+Você pode identificar inveja de funcionalidade observando funções que acessam muitos dados de outra classe, chamam repetidamente métodos de um mesmo objeto externo ou que processam dados que pertencem naturalmente a outra classe.
+
+Esse mau cheiro é causado principalmente pela separação inadequada de responsabilidades e por dados que estão distantes do comportamento que opera sobre eles.
 
 ## Exemplo Ruim
 
 ```javascript
-class Customer {
-    getAddress() { return this.address; }
-    getPhone() { return this.phone; }
-    getEmail() { return this.email; }
+class Cliente {
+  constructor(nome, email, telefone, endereco) {
+    this.nome = nome;
+    this.email = email;
+    this.telefone = telefone;
+    this.endereco = endereco;
+  }
 }
 
-class Invoice {
-    sendNotification(customer) {
-        // A função inveja os dados de Customer!
-        const address = customer.getAddress();
-        const phone = customer.getPhone();
-        const email = customer.getEmail();
-        
-        sendEmail(email);
-        sendSMS(phone);
-        sendMail(address);
+class EnviadorDeNotificacao {
+  enviarConfirmacao(cliente, pedido) {
+    // A função "inveja" os dados de Cliente
+    const nome = cliente.nome;
+    const email = cliente.email;
+    const endereco = cliente.endereco;
+    
+    console.log(`Enviando confirmação para ${nome} (${email})`);
+    console.log(`Produto será enviado para: ${endereco}`);
+    
+    if (cliente.telefone) {
+      console.log(`SMS enviado para ${cliente.telefone}`);
     }
+    
+    console.log(`Pedido: ${pedido.itens.length} itens`);
+  }
 }
 ```
 
 ## Como Refatorar
 
 ```javascript
-class Customer {
-    getAddress() { return this.address; }
-    getPhone() { return this.phone; }
-    getEmail() { return this.email; }
+class Cliente {
+  constructor(nome, email, telefone, endereco) {
+    this.nome = nome;
+    this.email = email;
+    this.telefone = telefone;
+    this.endereco = endereco;
+  }
+  
+  // Mova o comportamento para a classe que possui os dados
+  receberConfirmacao(pedido) {
+    console.log(`Enviando confirmação para ${this.nome} (${this.email})`);
+    console.log(`Produto será enviado para: ${this.endereco}`);
     
-    // Move a função para onde os dados estão
-    sendNotification() {
-        sendEmail(this.email);
-        sendSMS(this.phone);
-        sendMail(this.address);
+    if (this.telefone) {
+      console.log(`SMS enviado para ${this.telefone}`);
     }
+    
+    console.log(`Pedido: ${pedido.itens.length} itens`);
+  }
 }
 
-class Invoice {
-    // Agora apenas usa o serviço
-    sendNotification(customer) {
-        customer.sendNotification();
-    }
+// Agora apenas usa o serviço
+class EnviadorDeNotificacao {
+  enviarConfirmacao(cliente, pedido) {
+    cliente.receberConfirmacao(pedido);
+  }
 }
 ```
 
 ## Técnicas de Refatoração
 
-- **Move Function** - Mover função para a classe correta
+As seguintes técnicas são indicadas para refatorar inveja de funcionalidade:
+
+- **Move Function**: Mova a função para a classe que contém os dados que ela mais utiliza.
 
 ## Benefícios
 
-- Dados e comportamento juntos
-- Melhor encapsulamento
-- Código mais intuitivo
+Após a refatoração os benefícios são:
+
+- Dados e comportamento ficam juntos, seguindo o princípio de coesão
+- Redução do acoplamento entre classes
+- Código mais intuitivo e fácil de entender
+- Facilita a manutenção, pois mudanças ficam localizadas
+
+## Referências
+
+FOWLER, Martin; BECK, Kent. **Refatoração: Aperfeiçoando o Design de Códigos Existentes**. 2. ed. São Paulo: Novatec, 2018.

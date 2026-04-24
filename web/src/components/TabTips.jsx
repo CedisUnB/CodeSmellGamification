@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ApiService } from '../services/ApiService';
 import { useAuth } from '../contexts/AuthContext';
 import { useUser } from '../contexts/UserContext';
-import { FaLightbulb, FaLock, FaCheck, FaSpinner, FaTimes, FaUnlock } from 'react-icons/fa';
+import { FaLightbulb, FaLock, FaCheck, FaSpinner, FaTimes, FaUnlock, FaMapMarkerAlt, FaChartBar, FaList, FaTrophy } from 'react-icons/fa';
 import petiscosPoteVazio from '../assets/dicaVazio.svg';
 import petiscosPoteUm from '../assets/dicaUm.svg';
 import petiscosPoteDois from '../assets/dicaDois.svg';
@@ -17,7 +17,7 @@ const TIP_STAGES = {
 
 export default function TabTips({ exerciseId, tips, setTips }) {
     const { token } = useAuth();
-    const { user, refreshUser } = useUser();
+    const { user, updateUser } = useUser();
     const [loading, setLoading] = useState(false);
 
     const getCurrentTipStage = () => {
@@ -45,7 +45,7 @@ export default function TabTips({ exerciseId, tips, setTips }) {
                 setTips(prev => ({ ...prev, smellyLine: response.data.tip.smellyLine }));
             }
 
-            await refreshUser(); //TODO: Otimizar
+            await updateUser(response.data.user);
 
         } catch (error) {
             console.error('Erro ao buscar dica:', error);
@@ -68,9 +68,9 @@ export default function TabTips({ exerciseId, tips, setTips }) {
     const isTipUnlocked = (stage) => currentTipStage >= stage;
 
     const availableTips = [
-        { id: 1, title: 'Quantas linhas têm mau cheiro?', value: tips.linesCount, icon: '📊', visible: tips.linesCount !== null },
-        { id: 2, title: 'Quais tipos de mau cheiro existem?', value: tips.smellsCount, icon: '🎯', visible: tips.smellsCount !== null },
-        { id: 3, title: 'Uma linha específica', value: tips.smellyLine, icon: '📍', visible: tips.smellyLine !== null }
+        { id: 1, title: 'Quantas linhas têm mau cheiro?', value: tips.linesCount, icon: FaList, visible: tips.linesCount !== null },
+        { id: 2, title: 'Quais tipos de mau cheiro existem?', value: tips.smellsCount, icon: FaChartBar, visible: tips.smellsCount !== null },
+        { id: 3, title: 'Uma linha específica', value: tips.smellyLine, icon: FaMapMarkerAlt, visible: tips.smellyLine !== null }
     ];
 
     const visibleTips = availableTips.filter(tip => tip.visible);
@@ -155,8 +155,8 @@ export default function TabTips({ exerciseId, tips, setTips }) {
                             key={tip.id}
                             className="bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-3 border border-amber-200 dark:border-amber-800"
                         >
-                            <div className="flex items-start gap-2">
-                                <span className="text-lg">{tip.icon}</span>
+                            <div className="flex items-center gap-2">
+                                <tip.icon size={18} className="text-amber-500 mr-1" />
                                 <div className="flex-1">
                                     <h5 className="text-xs font-medium text-amber-700 dark:text-amber-300">
                                         Dica {tip.id}
@@ -186,16 +186,16 @@ export default function TabTips({ exerciseId, tips, setTips }) {
                     ) : (
                         <>
                             {currentTipStage >= 3 ? (
-                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                    🎉 Você já usou todas as dicas deste exercício!
+                                <p className="text-sm flex gap-2 items-center justify-center text-neutral-500 dark:text-neutral-400">
+                                    <FaTrophy className="text-orange-400" />Você já usou todas as dicas deste exercício!
                                 </p>
                             ) : !hasEnoughCoins ? (
-                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                    🦴 Você não tem petiscos suficientes para subornar o DevDog
+                                <p className="text-sm flex gap-2 items-center justify-center text-neutral-500 dark:text-neutral-400">
+                                    <FaLock className="text-orange-400" />Você não tem petiscos suficientes para subornar o DevDog
                                 </p>
                             ) : (
-                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                    💡 Clique no pote para receber sua primeira dica
+                                <p className="text-sm flex gap-2 items-center justify-center text-neutral-500 dark:text-neutral-400">
+                                    <FaLightbulb className="text-orange-400" /> Clique no pote para receber sua primeira dica
                                 </p>
                             )}
                         </>

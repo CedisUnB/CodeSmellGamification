@@ -1,4 +1,3 @@
-// pages/GuiaList.jsx
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FaBook } from 'react-icons/fa';
@@ -115,7 +114,7 @@ export default function GuiaList() {
                                 Fique de olho nos petiscos escondidos por aí...
                             </p>
                         </SpeechBubble>
-                        <img src={DevDog} alt="DevDog" className="w-48 sm:w-64 lg:w-72 object-contain hover:scale-105 transition-transform duration-300" />
+                        <img src={DevDog} alt="DevDog" className="w-48 sm:w-64 object-contain hover:scale-105 transition-transform duration-300" />
                     </div>
                 </div>
 
@@ -130,9 +129,9 @@ export default function GuiaList() {
                     ) : (
                         <>
                             <div className="flex-1">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {paginatedGuides.map(guide => (
-                                        <Link key={guide.slug} to={`/guia/${guide.slug}`} className="group bg-white dark:bg-neutral-800 rounded-2xl shadow-md hover:shadow-xl transition-all p-6 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 cursor-pointer">
+                                        <Link key={guide.slug} to={`/guia/${guide.slug}`} className="group bg-white dark:bg-neutral-800 rounded-2xl shadow-md hover:shadow-xl transition-all p-5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 cursor-pointer">
                                             <div className="flex items-start justify-between mb-3">
                                                 <span className="text-3xl group-hover:scale-110 transition-transform">{guide.icon}</span>
                                                 <span className={`text-xs px-2 py-1 rounded-full ${getColor(guide.category)}`}>

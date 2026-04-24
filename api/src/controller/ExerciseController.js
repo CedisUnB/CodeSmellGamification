@@ -77,7 +77,20 @@ class ExerciseController {
       recommended: exercise.id === recommendedId
     }))
 
-    return res.json(formattedExercises)
+    const recommendedList = formattedExercises.filter(ex => ex.recommended);
+    const nonRecommendedList = formattedExercises.filter(ex => !ex.recommended);
+
+    const difficultyOrder = { EASY: 1, MEDIUM: 2, HARD: 3 };
+    nonRecommendedList.sort((a, b) => {
+      if (a.difficulty !== b.difficulty) {
+        return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty];
+      }
+      return a.id - b.id;
+    });
+
+    const sortedExercises = [...recommendedList, ...nonRecommendedList];
+
+    return res.json(sortedExercises)
   }
 
   async getById(req, res) {
@@ -99,124 +112,59 @@ class ExerciseController {
           exerciseId,
           userId
         },
-        orderBy: { submittedAt: 'desc' },
+        orderBy: { score: 'desc' },
         select: {
-          id: true,
-          correctLines: true,
-          correctSmells: true,
+          score: true,
           submittedAt: true
         }
       });
 
-      // Busca o total de linhas com smell e smells únicos do exercício
-      const smellLines = await prisma.smellLine.findMany({
+      // Melhor score do usuário
+      const bestScore = userAttempts.length > 0 ? userAttempts[0].score : 0;
+      const attemptsCount = userAttempts.length;
+
+      // Busca todos os scores da comunidade
+      const communityScores = await prisma.attempt.findMany({
         where: { exerciseId },
-        select: { line: true, smellType: true }
+        select: { score: true, userId: true }
       });
 
-      const totalLinesWithSmell = smellLines.length;
-      const uniqueSmells = [...new Set(smellLines.map(s => s.smellType))];
-      const totalUniqueSmells = uniqueSmells.length;
+      // Calcula média da comunidade
+      const avgScore = communityScores.length > 0
+        ? communityScores.reduce((sum, a) => sum + a.score, 0) / communityScores.length
+        : 0;
 
-      // Busca todas as tentativas para calcular médias da comunidade
-      const allAttempts = await prisma.attempt.findMany({
-        where: { exerciseId },
-        select: {
-          correctLines: true,
-          correctSmells: true
-        }
-      });
-
-      // Calcula percentuais da comunidade
-      let communityLinesAccuracy = 0;
-      let communitySmellsAccuracy = 0;
-
-      if (allAttempts.length > 0) {
-        const totalLinesPossible = totalLinesWithSmell;
-        const totalSmellsPossible = totalUniqueSmells;
-
-        // Soma total de acertos da comunidade
-        const totalLinesCorrect = allAttempts.reduce((sum, a) => sum + a.correctLines, 0);
-        const totalSmellsCorrect = allAttempts.reduce((sum, a) => sum + a.correctSmells, 0);
-
-        // Percentual médio de acerto da comunidade
-        communityLinesAccuracy = totalLinesPossible > 0
-          ? Math.round((totalLinesCorrect / (allAttempts.length * totalLinesPossible)) * 100)
-          : 0;
-        communitySmellsAccuracy = totalSmellsPossible > 0
-          ? Math.round((totalSmellsCorrect / (allAttempts.length * totalSmellsPossible)) * 100)
-          : 0;
+      // Calcula posição do usuário no ranking
+      let userRank = null;
+      if (bestScore > 0) {
+        const higherScores = await prisma.attempt.groupBy({
+          by: ['userId'],
+          where: {
+            exerciseId,
+            score: { gt: bestScore }
+          },
+          _max: { score: true }
+        });
+        userRank = higherScores.length + 1;
       }
 
-      // Total de participantes
+      // Total de participantes únicos
       const uniqueUsers = await prisma.attempt.groupBy({
         by: ['userId'],
         where: { exerciseId }
       });
 
-      // Melhor tentativa do usuário
-      const bestAttempt = userAttempts.length > 0
-        ? userAttempts.reduce((best, current) => {
-          const currentTotal = current.correctLines + current.correctSmells;
-          const bestTotal = best.correctLines + best.correctSmells;
-          return currentTotal > bestTotal ? current : best;
-        })
-        : null;
-
-      // Percentuais do usuário
-      let userLinesAccuracy = 0;
-      let userSmellsAccuracy = 0;
-
-      if (bestAttempt && totalLinesWithSmell > 0 && totalUniqueSmells > 0) {
-        userLinesAccuracy = Math.round((bestAttempt.correctLines / totalLinesWithSmell) * 100);
-        userSmellsAccuracy = Math.round((bestAttempt.correctSmells / totalUniqueSmells) * 100);
-      }
-
-      // Posição no ranking (baseado na melhor tentativa)
-      let userRank = null;
-      if (bestAttempt) {
-        const userTotal = bestAttempt.correctLines + bestAttempt.correctSmells;
-        const allUsers = await prisma.attempt.groupBy({
-          by: ['userId'],
-          where: { exerciseId },
-          _max: {
-            correctLines: true,
-            correctSmells: true
-          }
-        });
-
-        let betterCount = 0;
-        for (const user of allUsers) {
-          const userBest = (user._max.correctLines || 0) + (user._max.correctSmells || 0);
-          if (userBest > userTotal) {
-            betterCount++;
-          }
-        }
-        userRank = betterCount + 1;
-      }
-
       return res.json({
-        // Minhas estatísticas
         myStats: {
-          attemptsCount: userAttempts.length,
-          bestLines: bestAttempt?.correctLines || 0,
-          bestSmells: bestAttempt?.correctSmells || 0,
-          linesAccuracy: userLinesAccuracy,
-          smellsAccuracy: userSmellsAccuracy,
-          hasAttempts: userAttempts.length > 0
+          attemptsCount,
+          bestScore: Math.round(bestScore),
+          hasAttempts: attemptsCount > 0,
+          rank: userRank
         },
-        // Estatísticas da comunidade
         communityStats: {
           totalParticipants: uniqueUsers.length,
-          totalAttempts: allAttempts.length,
-          avgLinesAccuracy: communityLinesAccuracy,
-          avgSmellsAccuracy: communitySmellsAccuracy
-        },
-        // Ranking
-        ranking: userRank ? {
-          position: userRank,
-          total: uniqueUsers.length
-        } : null
+          avgScore: Math.round(avgScore)
+        }
       });
 
     } catch (error) {
@@ -291,15 +239,22 @@ class ExerciseController {
       }
 
       // 6. Desconta as coins do usuário
-      await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: { id: userId },
-        data: { coins: { decrement: TIP_COST } }
+        data: { coins: { decrement: TIP_COST } },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          coins: true,
+          isAnonymous: true,
+        }
       })
 
       return res.status(200).json({
         tip,
         tipNumber,
-        remainingCoins: user.coins - TIP_COST
+        user: updatedUser
       })
 
     } catch (error) {

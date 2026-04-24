@@ -71,11 +71,13 @@ export default function Login() {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     {/* Campo Email */}
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             <FaEnvelope className="inline mr-2 text-neutral-400" />
                             Email
                         </label>
                         <input
+                            id="email"
+                            autoComplete="email"
                             {...register('email', {
                                 required: 'Email é obrigatório',
                                 pattern: {
@@ -94,12 +96,14 @@ export default function Login() {
 
                     {/* CampoSenha */}
                     <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label htmlFor="password" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                             <FaLock className="inline mr-2 text-neutral-400" />
                             Senha
                         </label>
                         <div className="relative">
                             <input
+                                id="password"
+                                autoComplete="current-password"
                                 {...register('password', { required: 'Senha é obrigatória' })}
                                 type={showPassword ? "text" : "password"}
                                 placeholder="••••••••"

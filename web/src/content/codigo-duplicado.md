@@ -7,60 +7,79 @@ icon: "🔄"
 
 ## O que é?
 
-A presença da mesma estrutura de código em múltiplos lugares é um forte indicador de problema. A duplicação exige que o desenvolvedor leia cuidadosamente cada cópia para identificar diferenças e, quando necessário modificar, encontrar todas as ocorrências.
+Código duplicado ocorre quando a mesma estrutura de código aparece em diferentes partes do sistema. Essa duplicação exige que o desenvolvedor leia cuidadosamente cada cópia para identificar diferenças e, quando necessário modificar, encontrar todas as ocorrências.
 
 ## Como identificar
 
-- Blocos de código idênticos ou muito similares
-- Funções que fazem a mesma coisa com pequenas variações
-- Lógica repetida em diferentes partes do sistema
-- "Copiar e colar" é um sinal claro
+Você pode identificar código duplicado observando blocos de código idênticos ou muito similares em diferentes partes do sistema. Outro sinal é quando uma mesma lógica precisa ser alterada em vários lugares para implementar uma única mudança.
+
+Esse mau cheiro é causado principalmente pela prática de copiar e colar código e pela falta de abstração adequada.
 
 ## Exemplo Ruim
 
 ```javascript
-function calculateTotal(items) {
-    let total = 0;
-    for (let item of items) {
-        total += item.price * item.quantity;
-    }
-    return total;
+function calcularTotalCarrinho(itens) {
+  let total = 0;
+  for (let i = 0; i < itens.length; i++) {
+    total += itens[i].preco * itens[i].quantidade;
+  }
+  return total;
 }
 
-function calculateDiscount(items) {
-    let total = 0;
-    for (let item of items) {
-        total += item.price * item.quantity;
-    }
-    return total * 0.1;
+function calcularTotalPedido(itens) {
+  let soma = 0;
+  for (let i = 0; i < itens.length; i++) {
+    soma += itens[i].preco * itens[i].quantidade;
+  }
+  return soma;
+}
+
+function calcularTotalComDesconto(itens) {
+  let resultado = 0;
+  for (let i = 0; i < itens.length; i++) {
+    resultado += itens[i].preco * itens[i].quantidade;
+  }
+  return resultado * 0.9;
 }
 ```
 
 ## Como Refatorar
 
 ```javascript
-function calculateSubtotal(items) {
-    return items.reduce((sum, item) => 
-        sum + (item.price * item.quantity), 0);
+function calcularSubtotal(itens) {
+  return itens.reduce((total, item) => 
+    total + (item.preco * item.quantidade), 0);
 }
 
-function calculateTotal(items) {
-    return calculateSubtotal(items);
+function calcularTotalCarrinho(itens) {
+  return calcularSubtotal(itens);
 }
 
-function calculateDiscount(items) {
-    return calculateSubtotal(items) * 0.1;
+function calcularTotalPedido(itens) {
+  return calcularSubtotal(itens);
+}
+
+function calcularTotalComDesconto(itens) {
+  return calcularSubtotal(itens) * 0.9;
 }
 ```
 
 ## Técnicas de Refatoração
 
-- **Extract Function** - Extrair código repetido para uma função
-- **Pull Up Method** - Subir método para classe pai
+As seguintes técnicas são indicadas para refatorar código duplicado:
+
+- **Extract Function**: Extraia o código duplicado para uma função reutilizável.
+- **Pull Up Method**: Quando a duplicação ocorre em classes irmãs, mova o método para a superclasse.
 
 ## Benefícios
 
-- Uma única fonte de verdade
-- Correções afetam todos os lugares
-- Código mais enxuto
-- Facilita testes
+Após a refatoração os benefícios são:
+
+- Redução do tamanho do código
+- Uma única fonte de verdade para cada lógica
+- Mudanças precisam ser feitas em apenas um local
+- Facilita a manutenção e evolução do sistema
+
+## Referências
+
+FOWLER, Martin; BECK, Kent. **Refatoração: Aperfeiçoando o Design de Códigos Existentes**. 2. ed. São Paulo: Novatec, 2018.

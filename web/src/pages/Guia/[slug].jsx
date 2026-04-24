@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaPaw } from 'react-icons/fa';
-import ReactMarkdown from 'react-markdown';
 import { parseFrontmatter } from '../../utils/markdownParser';
 import { usePetiscoGame } from '../../hooks/usePetiscoGame';
 import FloatingPetisco from '../../components/FloatingPetisco';
-import MarkdownComponents from '../../utils/markdownStyles';
 import NotFound from '../NotFound';
 import { getAlternateColor } from '../../utils/colorizer';
 import { translate } from '../../utils/enumTranslator';
+import MarkdownRenderer from '../../components/MarkdownRenderer';
 
 const guideModules = import.meta.glob('/src/content/*.md', {
     query: '?raw',
@@ -64,6 +63,7 @@ export default function GuiaDetail() {
         return () => {
             stopGame(); // Para o jogo de encontre o pestisco
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [slug]);
 
     if (loading) {
@@ -118,9 +118,7 @@ export default function GuiaDetail() {
 
                 {/* Conteúdo Markdown */}
                 <div className="prose prose-teal dark:prose-invert max-w-none">
-                    <ReactMarkdown components={MarkdownComponents}>
-                        {guide.content}
-                    </ReactMarkdown>
+                    <MarkdownRenderer content={guide.content} />
                 </div>
             </article>
 

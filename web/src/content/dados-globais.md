@@ -7,57 +7,116 @@ icon: "🌍"
 
 ## O que é?
 
-Dados globais representam um dos maus cheiros mais perigosos, pois podem ser modificados de qualquer lugar do código, dificultando o rastreamento de modificações.
+Dados globais representam um dos maus cheiros mais perigosos, pois podem ser modificados de qualquer lugar do código, dificultando o rastreamento de quem alterou o valor e quando a alteração ocorreu.
 
 ## Como identificar
 
-- Variáveis `window.variavel`
-- `global` no Node.js
-- Módulos com estado global
-- Variáveis estáticas públicas
+Você pode identificar dados globais observando variáveis que são acessíveis e modificáveis em diferentes partes do sistema sem controle de acesso. Outros sinais incluem variáveis declaradas no escopo global, variáveis estáticas públicas ou singletons que expõem seu estado diretamente.
+
+Esse mau cheiro é causado principalmente pela praticidade inicial que dados globais oferecem e pela falta de encapsulamento adequado.
 
 ## Exemplo Ruim
 
 ```javascript
-let userLoggedIn = false;
-let currentTheme = 'light';
-let apiUrl = 'http://localhost:3000';
+// Variáveis globais acessíveis de qualquer lugar
+let usuarioLogado = null;
+let temaAtual = "claro";
+let moedas = 0;
 
-function login() {
-    userLoggedIn = true; // Qualquer função pode mudar!
+function fazerLogin(usuario) {
+  usuarioLogado = usuario;
+  moedas = usuario.saldo;
 }
 
-function logout() {
-    userLoggedIn = false; // Efeitos colaterais inesperados
+function mudarTema(tema) {
+  temaAtual = tema;
+}
+
+function comprarItem(valor) {
+  if (usuarioLogado) {
+    moedas = moedas - valor; // Modifica diretamente a variável global
+  }
+}
+
+function qualquerOutraFuncao() {
+  // Qualquer função pode modificar usuarioLogado, temaAtual ou moedas
+  usuarioLogado = null; // Efeito colateral inesperado
 }
 ```
 
 ## Como Refatorar
 
 ```javascript
-class AppState {
-    constructor() {
-        this._userLoggedIn = false;
-        this._currentTheme = 'light';
+class SessaoUsuario {
+  constructor() {
+    this.usuarioLogado = null;
+    this.moedas = 0;
+  }
+  
+  login(usuario) {
+    this.usuarioLogado = usuario;
+    this.moedas = usuario.saldo;
+  }
+  
+  logout() {
+    this.usuarioLogado = null;
+    this.moedas = 0;
+  }
+  
+  getMoedas() {
+    return this.moedas;
+  }
+  
+  debitarMoedas(valor) {
+    if (this.usuarioLogado && this.moedas >= valor) {
+      this.moedas -= valor;
+      return true;
     }
-    
-    isUserLoggedIn() { return this._userLoggedIn; }
-    setUserLoggedIn(value) { 
-        this._userLoggedIn = value;
-        this._notifyListeners();
-    }
+    return false;
+  }
 }
 
-const appState = new AppState();
+class ConfiguracaoTema {
+  constructor() {
+    this.temaAtual = "claro";
+  }
+  
+  mudarTema(tema) {
+    this.temaAtual = tema;
+  }
+  
+  getTema() {
+    return this.temaAtual;
+  }
+}
+
+// Instâncias controladas
+const sessao = new SessaoUsuario();
+const configuracao = new ConfiguracaoTema();
+
+function comprarItem(valor) {
+  if (sessao.debitarMoedas(valor)) {
+    // processar compra
+  }
+}
 ```
 
 ## Técnicas de Refatoração
 
-- **Encapsulate Variable** - Encapsular variáveis globais
+A seguinte técnica é indicada para refatorar dados globais:
+
+- **Encapsulate Variable**: Encapsule a variável global em um método ou propriedade, limitando o escopo e o acesso aos dados.
 
 ## Benefícios
 
-- Controle sobre modificações
-- Facilita debugging
-- Testes mais previsíveis
-- Reduz acoplamento
+Após a refatoração os benefícios são:
+
+- Controle centralizado sobre modificações nos dados
+- Facilidade para rastrear quem alterou o quê
+- Redução de efeitos colaterais inesperados
+- Melhor testabilidade, pois o estado é isolado
+- Código mais previsível e fácil de depurar
+
+## Referências
+
+FOWLER, Martin; BECK, Kent. **Refatoração: Aperfeiçoando o Design de Códigos Existentes**. 2. ed. São Paulo: Novatec, 2018.

@@ -54,16 +54,16 @@
 #### Buscar estatísticas de um Exercício
 **Função:** ```getStatistics```
 **Endpoint:** GET ```/exercise/:id/statistics```
-**Retorno:** ```{ totalAttempts: number, userAttempts: number }```
+**Retorno:** ```{ myStats: { attemptsCount: number, bestScore: number, hasAttempts: boolean, rank: number }, communityStats: { totalParticipants: number, avgScore: number } }```
 **Token Obrigatório:** Sim
-**Descrição:** Busca as estatísticas de um exercício pelo id e retorna o numero de tentativas globais e o numero de tentativas do usuário.
+**Descrição:** Busca as estatísticas de um exercício pelo id e retorna diversas informações.
 **Caso de Uso:** Quando o usuário acessar a pagina de um exercício e clicar na aba de estatísticas.
 
 #### Fazer uma Tentativa
 **Função:** ```makeAttempt```
 **Endpoint:** POST ```/exercise/:id/attempt```
 **Body:** ```[{ line: number, smell: string }]```
-**Retorno:** ```{ correctLines: number, correctSmells: number, matchedLines: [number], score: number }```
+**Retorno:** ```{ correctLines: number, correctSmells: number, matchedLines: [number], score: number, user}```
 **Token Obrigatório:** Sim
 **Descrição:** Faz uma tentativa de resolver um exercicio e retorna o numero de linhas corretas, o numero de smells corretos, as linhas selecionadas que foram classificadas corretamente e uma pontuação.
 **Caso de Uso:** Quando o usuário tentar resolver um exercício.
@@ -72,7 +72,7 @@
 **Função:** ```addCoin```
 **Endpoint:** POST ```/user/coin```
 **Body:** ```{ id: string, amount: number }```
-**Retorno:** ```{ coins: number }```
+**Retorno:** ```{ user }```
 **Token Obrigatório:** Sim
 **Descrição:** Adiciona coins para o usuario e retorna o numero total de coins do usuario apos a adicao.
 **Caso de Uso:** Quando o usuário adicionar receber petiscos por exemplo encontrando na pagina do guia.
@@ -81,7 +81,7 @@
 **Função:** ```getTip```
 **Endpoint:** POST ```/exercise/:id/tip```
 **Body:** ```{ tipNumber: number }```
-**Retorno:** ```{ linesCount: number }``` ou ```{ smellsCount: number }``` ou ```{ smellyLine: number }```
+**Retorno:** ```{ linesCount: number }``` ou ```{ smellsCount: number }``` ou ```{ smellyLine: number }``` e ```{tip: number, user}```
 **Token Obrigatório:** Sim
 **Descrição:** Busca uma dica para um exercicio e retorna o numero de linhas com smell, o numero de smells diferentes e uma linha que deve ser selecionada.
 **Caso de Uso:** Quando o usuário clicar na aba de dicas de um exercicio.

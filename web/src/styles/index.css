@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* * {
   outline: 1px solid red;
 } */
@@ -15,7 +17,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* styles/globals.css */
 div::-webkit-scrollbar {
     width: 8px;
 }

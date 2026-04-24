@@ -57,6 +57,7 @@ model Attempt {
   exerciseId    Int
   correctLines  Int
   correctSmells Int
+  score         Float    @default(0)
   attemptData   Json?
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
