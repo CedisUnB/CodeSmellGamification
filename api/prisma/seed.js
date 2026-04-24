@@ -3,6 +3,12 @@ import { PrismaClient, Difficulty, SmellType } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
+  // Limpa o banco de dados
+  await prisma.smellLine.deleteMany({})
+  await prisma.attempt.deleteMany({})
+  await prisma.exercise.deleteMany({})
+  await prisma.user.deleteMany({})
+
   // Cria exercícios com smellLines
   await prisma.exercise.create({
     data: {
@@ -632,6 +638,689 @@ class Notificador {
     }
   })
 
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Empréstimos",
+      description: `A função \`calcularParcela()\` é responsável por calcular o valor das parcelas de um empréstimo bancário. Ela recebe os parâmetros: valor do empréstimo, número de parcelas, taxa de juros mensal, taxa de administração, valor do IOF, percentual de seguro, taxa de abertura de crédito, valor de tarifa bancária, desconto para pagamento antecipado e uma flag para cliente especial.`,
+      difficulty: Difficulty.MEDIUM,
+      code: `function calcularParcela(
+  valor,
+  parcelas,
+  juros,
+  admin,
+  iof,
+  seguro,
+  taxaAbertura,
+  tarifa,
+  desconto,
+  especial
+) {
+  let taxaTotal = juros + admin + iof;
+
+  if (especial) {
+    taxaTotal = taxaTotal - taxaTotal * 0.1;
+  }
+
+  let montante = valor * Math.pow(1 + taxaTotal / 100, parcelas);
+
+  if (seguro > 0) {
+    let valorSeguro = valor * (seguro / 100);
+    montante += valorSeguro;
+  }
+
+  if (taxaAbertura > 0) {
+    montante += taxaAbertura;
+  }
+
+  if (tarifa > 0) {
+    montante += tarifa;
+  }
+
+  let parcela = montante / parcelas;
+
+  if (desconto && desconto > 0) {
+    let descontoValor = parcela * (desconto / 100);
+    parcela = parcela - descontoValor;
+  }
+
+  return parcela;
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 2 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 3 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 4 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 5 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 6 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 7 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 8 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 9 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 10 },
+          { smellType: SmellType.LONG_PARAMETER_LIST, line: 11 }
+        ]
+      }
+    }
+  })
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Configurações",
+      description: `Um sistema web de gestão de usuários precisa controlar qual usuário está logado, o tema visual da interface, o idioma das mensagens, o modo de manutenção do sistema e o tempo de expiração da sessão. Para isso, diversas funções foram implementadas para manipular essas configurações.
+
+Um desenvolvedor novato, ao implementar uma nova funcionalidade de notificações, modificou \`timeoutSessao\` sem saber que isso afetava o tempo de expiração da sessão de todos os usuários logados. O rastreamento de onde e quando cada variável global é alterada se tornou uma tarefa quase impossível, resultando em bugs aleatórios de difícil reprodução.`,
+      difficulty: Difficulty.MEDIUM,
+      code: `let usuarioLogado = null;
+let temaAtual = "claro";
+let idioma = "pt-BR";
+let modoManutencao = false;
+let timeoutSessao = 30;
+
+function fazerLogin(usuario) {
+  usuarioLogado = usuario;
+  console.log("Usuário logado:", usuarioLogado.nome);
+}
+
+function fazerLogout() {
+  usuarioLogado = null;
+  console.log("Usuário deslogado");
+}
+
+function alterarTema(tema) {
+  temaAtual = tema;
+  document.body.className = tema;
+}
+
+function alterarIdioma(novoIdioma) {
+  idioma = novoIdioma;
+  carregarTraducoes();
+}
+
+function ativarManutencao() {
+  modoManutencao = true;
+  console.log("Sistema em manutenção");
+}
+
+function verificarStatus() {
+  if (modoManutencao) {
+    return "Sistema indisponível";
+  }
+  return "Sistema operacional";
+}
+
+function temUsuarioLogado() {
+  return usuarioLogado !== null;
+}
+
+function obterTema() {
+  return temaAtual;
+}
+
+function configurarTimeout(segundos) {
+  timeoutSessao = segundos;
+  iniciarTimerSessao();
+}
+
+function getTimeout() {
+  return timeoutSessao;
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.GLOBAL_DATA, line: 1 },
+          { smellType: SmellType.GLOBAL_DATA, line: 2 },
+          { smellType: SmellType.GLOBAL_DATA, line: 3 },
+          { smellType: SmellType.GLOBAL_DATA, line: 4 },
+          { smellType: SmellType.GLOBAL_DATA, line: 5 }
+        ]
+      }
+    }
+  })
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Processamento de Pedidos",
+      description: `Um sistema de e-commerce processa pedidos de clientes em tempo real. Durante o processamento, o objeto do pedido é passado entre diferentes funções que modificam seus campos diretamente: status, valor total, data de processamento, frete e itens disponíveis.
+
+Um desenvolvedor, ao implementar uma nova regra de desconto, modificou o valor total do pedido dentro de uma função de cálculo de frete. Isso causou inconsistências porque outras funções esperavam que o valor total ainda estivesse inalterado em determinadas etapas do processamento. A dificuldade em rastrear onde e quando cada campo foi modificado tornou o código imprevisível e cheio de efeitos colaterais.`,
+      difficulty: Difficulty.MEDIUM,
+      code: `function processarPedido(pedido) {
+  pedido.status = "processando";
+  pedido.dataProcessamento = new Date();
+  
+  calcularFrete(pedido);
+  aplicarDesconto(pedido);
+  calcularImposto(pedido);
+  
+  if (pedido.valorTotal > 500) {
+    pedido.status = "aprovado";
+  } else {
+    pedido.status = "pendente";
+  }
+  
+  return pedido;
+}
+
+function calcularFrete(pedido) {
+  if (pedido.uf === "SP") {
+    pedido.frete = 10;
+  } else if (pedido.uf === "RJ") {
+    pedido.frete = 15;
+  } else {
+    pedido.frete = 25;
+  }
+  pedido.valorTotal = pedido.subtotal + pedido.frete;
+}
+
+function aplicarDesconto(pedido) {
+  if (pedido.cupom === "DESCONTO10") {
+    pedido.valorTotal = pedido.valorTotal * 0.9;
+  }
+  pedido.descontoAplicado = true;
+}
+
+function calcularImposto(pedido) {
+  pedido.imposto = pedido.valorTotal * 0.1;
+  pedido.valorTotal = pedido.valorTotal + pedido.imposto;
+  pedido.impostoCalculado = true;
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.MUTABLE_DATA, line: 2 },
+          { smellType: SmellType.MUTABLE_DATA, line: 3 },
+          { smellType: SmellType.MUTABLE_DATA, line: 10 },
+          { smellType: SmellType.MUTABLE_DATA, line: 12 },
+          { smellType: SmellType.MUTABLE_DATA, line: 20 },
+          { smellType: SmellType.MUTABLE_DATA, line: 22 },
+          { smellType: SmellType.MUTABLE_DATA, line: 24 },
+          { smellType: SmellType.MUTABLE_DATA, line: 26 },
+          { smellType: SmellType.MUTABLE_DATA, line: 31 },
+          { smellType: SmellType.MUTABLE_DATA, line: 33 },
+          { smellType: SmellType.MUTABLE_DATA, line: 37 },
+          { smellType: SmellType.MUTABLE_DATA, line: 38 },
+          { smellType: SmellType.MUTABLE_DATA, line: 39 }
+
+        ]
+      }
+    }
+  })
+
+  await prisma.exercise.create({
+    data: {
+      title: "Processador de Pagamentos",
+      description: `Um sistema de pagamentos precisa processar transações usando diferentes provedores (PayPal, Stripe, MercadoPago). A classe \`ProcessadorPagamento\` contém toda a lógica de cálculo de taxas, validação de cartão, registro de transação e envio de notificações.
+
+Quando a equipe precisa alterar a taxa de juros para parcelamento, ela modifica a mesma classe. Quando precisa mudar a validação de cartão, também altera a mesma classe. Quando precisa atualizar o formato do log de transações, novamente a mesma classe é modificada. Mudanças por razões completamente diferentes sempre caem no mesmo lugar.`,
+      difficulty: Difficulty.HARD,
+      code: `class ProcessadorPagamento {
+  processar(transacao, cliente, provedor) {
+    let valor = transacao.valor;
+    let parcelas = transacao.parcelas;
+    let tipoCartao = transacao.cartao.tipo;
+    
+    // Validação do cartão
+    if (tipoCartao === "credito") {
+      if (transacao.cartao.validade < new Date()) {
+        throw new Error("Cartão expirado");
+      }
+      if (!validarCVV(transacao.cartao.cvv)) {
+        throw new Error("CVV inválido");
+      }
+    }
+    
+    // Cálculo de taxa por provedor
+    if (provedor === "PayPal") {
+      valor = valor + valor * 0.05;
+    } else if (provedor === "Stripe") {
+      valor = valor + 3.99;
+    } else if (provedor === "MercadoPago") {
+      if (parcelas > 1) {
+        valor = valor + valor * 0.08;
+      }
+    }
+    
+    // Cálculo de parcelamento
+    if (parcelas > 1) {
+      let juros = 0;
+      if (parcelas <= 3) {
+        juros = 0.02;
+      } else if (parcelas <= 6) {
+        juros = 0.04;
+      } else {
+        juros = 0.06;
+      }
+      valor = valor + valor * juros;
+    }
+    
+    // Verificação de limite do cliente
+    if (cliente.limite < valor) {
+      throw new Error("Limite insuficiente");
+    }
+    
+    // Registro da transação
+    console.log("Transação processada:", {
+      id: transacao.id,
+      valor: valor,
+      cliente: cliente.nome
+    });
+    
+    // Envio de notificação
+    if (cliente.email) {
+      enviarEmail(cliente.email, "Pagamento aprovado");
+    }
+    if (cliente.telefone) {
+      enviarSMS(cliente.telefone, "Pagamento aprovado");
+    }
+    
+    return valor;
+  }
+  
+  validarCVV(cvv) {
+    return cvv && cvv.length === 3;
+  }
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.DIVERGENT_CHANGE, line: 1 },
+          { smellType: SmellType.LONG_METHOD, line: 2 },
+          { smellType: SmellType.FEATURE_ENVY, line: 3 },
+          { smellType: SmellType.FEATURE_ENVY, line: 4 },
+          { smellType: SmellType.FEATURE_ENVY, line: 5 }
+        ]
+      }
+    }
+  })
+
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Cálculo de Benefícios",
+      description: `Em um sistema de RH, a equipe precisa calcular diferentes benefícios para os funcionários, como o bonus, vale-refeição, plano de saude e horas extras. Cada benefício tem valores diferentes que dependem do cargo do funcionário (estagiário, analista, coordenador ou gerente). Para implementar isso, foram criadas as funções \`calcularBonus()\`, \`calcularValeRefeicao()\`, \`calcularPlanoSaude()\` e \`calcularHorasExtras()\`.
+
+Quando um novo cargo é adicionado ao sistema (ex: "diretor"), a equipe precisa modificar todas essas quatro funções para incluir as novas regras. O processo é repetitivo e propenso a erros, já que é comum esquecer de atualizar uma das funções, resultando em cálculos inconsistentes.`,
+      difficulty: Difficulty.MEDIUM,
+      code: `function calcularBonus(funcionario) {
+  let bonus = 0;
+  switch (funcionario.cargo) {
+    case "estagiario":
+      bonus = 500;
+      break;
+    case "analista":
+      bonus = 1000;
+      break;
+    case "coordenador":
+      bonus = 2000;
+      break;
+    case "gerente":
+      bonus = 5000;
+      break;
+    default:
+      bonus = 0;
+  }
+  return bonus;
+}
+
+function calcularValeRefeicao(funcionario) {
+  let vale = 0;
+  switch (funcionario.cargo) {
+    case "estagiario":
+      vale = 15;
+      break;
+    case "analista":
+      vale = 25;
+      break;
+    case "coordenador":
+      vale = 35;
+      break;
+    case "gerente":
+      vale = 45;
+      break;
+    default:
+      vale = 0;
+  }
+  return vale;
+}
+
+function calcularPlanoSaude(funcionario) {
+  let plano = 0;
+  switch (funcionario.cargo) {
+    case "estagiario":
+      plano = 150;
+      break;
+    case "analista":
+      plano = 300;
+      break;
+    case "coordenador":
+      plano = 500;
+      break;
+    case "gerente":
+      plano = 800;
+      break;
+    default:
+      plano = 0;
+  }
+  return plano;
+}
+
+function calcularHorasExtras(funcionario) {
+  let horaExtra = 0;
+  switch (funcionario.cargo) {
+    case "estagiario":
+      horaExtra = 20;
+      break;
+    case "analista":
+      horaExtra = 35;
+      break;
+    case "coordenador":
+      horaExtra = 50;
+      break;
+    case "gerente":
+      horaExtra = 0;
+      break;
+    default:
+      horaExtra = 0;
+  }
+  return horaExtra;
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.REPEATED_SWITCHES, line: 3 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 4 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 5 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 6 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 7 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 8 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 9 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 10 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 11 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 12 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 13 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 14 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 15 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 16 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 17 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 18 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 24 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 25 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 26 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 27 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 28 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 29 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 30 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 31 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 32 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 33 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 34 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 35 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 36 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 37 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 38 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 39 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 45 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 46 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 47 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 48 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 49 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 50 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 51 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 52 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 53 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 54 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 55 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 56 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 57 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 58 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 59 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 60 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 66 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 67 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 68 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 69 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 70 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 71 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 72 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 73 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 74 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 75 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 76 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 77 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 78 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 79 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 80 },
+          { smellType: SmellType.REPEATED_SWITCHES, line: 81 }
+        ]
+      }
+    }
+  })
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Autenticação",
+      description: `Um sistema de autenticação possui uma classe \`ValidadorDeEmail\` que contém apenas um método simples para verificar se um email contém "@" e ".". A classe \`FormatadorDeData\` possui um único método que apenas chama \`toLocaleDateString()\` do JavaScript. A classe \`CalculadoraDeDesconto\` tem um método que simplesmente multiplica o valor por 0.9.
+
+Essas classes foram criadas durante uma fase inicial do projeto com a intenção de que cresceriam, mas nunca receberam funcionalidades adicionais. Atualmente, elas adicionam complexidade desnecessária ao código, exigindo que os desenvolvedores criem instâncias ou naveguem por arquivos extras para entender uma lógica trivial.`,
+      difficulty: Difficulty.EASY,
+      code: `class ValidadorDeEmail {
+  validar(email) {
+    return email.includes("@") && email.includes(".");
+  }
+}
+
+class FormatadorDeData {
+  formatar(data) {
+    return data.toLocaleDateString();
+  }
+}
+
+class CalculadoraDeDesconto {
+  aplicar(preco) {
+    return preco * 0.9;
+  }
+}
+
+function processarPedido(pedido) {
+  const validador = new ValidadorDeEmail();
+  const formatador = new FormatadorDeData();
+  const calculadora = new CalculadoraDeDesconto();
+  
+  if (!validador.validar(pedido.email)) {
+    return "Email inválido";
+  }
+  
+  const dataFormatada = formatador.formatar(new Date());
+  const precoComDesconto = calculadora.aplicar(pedido.preco);
+  
+  return { ...pedido, precoComDesconto, dataFormatada };
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.LAZY_ELEMENT, line: 1 },
+          { smellType: SmellType.LAZY_ELEMENT, line: 7 },
+          { smellType: SmellType.LAZY_ELEMENT, line: 13 }
+        ]
+      }
+    }
+  })
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Cálculo Tributário",
+      description: `Um sistema financeiro precisa calcular impostos sobre vendas. A função \`calcularImposto()\` foi criada com vários parâmetros pensando em diferentes cenários futuros: tipo de imposto (ICMS, ISS, IPI), regime tributário (Simples, Lucro Presumido), alíquota especial e flag para considerar imposto de renda.
+
+No entanto, em três anos de operação, nunca foi necessário considerar os outros parâmetros. Por isso, o sistema ainda usa a taxa fixa de 10% para o cálculo de todos os impostos.`,
+      difficulty: Difficulty.EASY,
+      code: `function calcularImposto(
+  valor, 
+  tipoImposto, 
+  regime, 
+  aliquotaEspecial, 
+  considerarIR
+) {
+  return valor * 0.1;
+}
+
+function processarVenda(produto, quantidade) {
+  const subtotal = produto.preco * quantidade;
+  const imposto = calcularImposto(subtotal, "ICMS", "Simples", null, false);
+  return subtotal + imposto;
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 3 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 4 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 5 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 6 }
+        ]
+      }
+    }
+  })
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Sons de Animais",
+      description: `Um sistema foi desenvolvido para gerenciar sons de animais em um aplicativo educativo. Uma classe base \`Animal\` foi criada com um método abstrato \`falar()\`, antecipando que vários animais seriam implementados no futuro.
+
+No entanto, após o lançamento, o cliente desistiu de adicionar mais animais e focar o aplicativo apenas em cachorros. A classe \`Animal\` e o método abstrato \`falar()\` nunca foram utilizados para outros tipos de animais, tornando-se código morto que só adiciona complexidade sem benefício real.`,
+      difficulty: Difficulty.EASY,
+      code: `class Animal {
+  constructor(nome) {
+    this.nome = nome;
+  }
+  
+  falar() {
+    throw new Error("Método deve ser implementado");
+  }
+}
+
+class Cachorro extends Animal {
+  falar() {
+    return "Au au";
+  }
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 1 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 2 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 3 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 4 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 5 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 6 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 7 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 8 },
+          { smellType: SmellType.SPECULATIVE_GENERALITY, line: 9 }
+        ]
+      }
+    }
+  })
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Cálculo de Frete",
+      description: `Um sistema de e-commerce calcula o frete com base em diferentes modalidades. A classe \`CalculadoraFrete\` possui campos que são utilizados dependendo do tipo de frete, para cada modalidade é levado em consideração um subconjunto desses campos: \`valorBase\`, \`percentualDesconto\`, \`parcela\`, \`aliquotaEspecial\`, \`pesoExtra\` e \`taxaUrgencia\`.`,
+      difficulty: Difficulty.MEDIUM,
+      code: `class CalculadoraFrete {
+  constructor() {
+    this.valorBase = 0;
+    this.percentualDesconto = 0;
+    this.parcela = 0;
+    this.aliquotaEspecial = 0;
+    this.pesoExtra = 0;
+    this.taxaUrgencia = 0;
+  }
+  
+  calcularComDesconto(valor, desconto) {
+    this.valorBase = valor;
+    this.percentualDesconto = desconto;
+    this.parcela = 1;
+    
+    return valor * (1 - desconto / 100);
+  }
+  
+  calcularParcelado(valor, parcelas) {
+    this.valorBase = valor;
+    this.parcela = parcelas;
+    
+    return valor / parcelas;
+  }
+  
+  calcularFreteUrgente(peso, distancia) {
+    this.pesoExtra = peso;
+    this.taxaUrgencia = 2.5;
+    
+    return (peso * distancia * 0.5) * this.taxaUrgencia;
+  }
+  
+  calcularComAliquotaEspecial(valor, aliquota) {
+    this.aliquotaEspecial = aliquota;
+    
+    return valor * (1 + aliquota / 100);
+  }
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.TEMPORARY_FIELD, line: 3 },
+          { smellType: SmellType.TEMPORARY_FIELD, line: 4 },
+          { smellType: SmellType.TEMPORARY_FIELD, line: 5 },
+          { smellType: SmellType.TEMPORARY_FIELD, line: 6 },
+          { smellType: SmellType.TEMPORARY_FIELD, line: 7 },
+          { smellType: SmellType.TEMPORARY_FIELD, line: 8 }
+        ]
+      }
+    }
+  })
+
+  await prisma.exercise.create({
+    data: {
+      title: "Sistema de Notificações para Pedidos",
+      description: `Um sistema de e-commerce precisa enviar notificações para clientes quando os pedidos são enviados. A função \`enviarNotificacao()\` recebe um pedido como argumento e notifica o cliente sobre o status do pedido. Para isso, ela acessa os campos do cliente, como nome, email e telefone, para enviar as notificações por email e SMS.`,
+      difficulty: Difficulty.MEDIUM,
+      code: `class Endereco {
+  constructor(cidade, estado, cep) {
+    this.cidade = cidade;
+    this.estado = estado;
+    this.cep = cep;
+  }
+}
+
+class Contato {
+  constructor(email, telefone) {
+    this.email = email;
+    this.telefone = telefone;
+  }
+}
+
+class Cliente {
+  constructor(nome, endereco, contato) {
+    this.nome = nome;
+    this.endereco = endereco;
+    this.contato = contato;
+  }
+}
+
+class Pedido {
+  constructor(cliente, itens, valor) {
+    this.cliente = cliente;
+    this.itens = itens;
+    this.valor = valor;
+  }
+}
+
+function enviarNotificacao(pedido) {
+  const nomeCliente = pedido.cliente.nome;
+  const emailCliente = pedido.cliente.contato.email;
+  const telefoneCliente = pedido.cliente.contato.telefone;
+
+  enviarEmail(emailCliente, "Olá, " + nomeCliente + "! Seu pedido foi enviado!");
+  enviarSMS(telefoneCliente, "Olá, " + nomeCliente + "! Seu pedido foi enviado!");
+}`,
+      smellLines: {
+        create: [
+          { smellType: SmellType.MESSAGE_CHAINS, line: 33 },
+          { smellType: SmellType.MESSAGE_CHAINS, line: 34 },
+          { smellType: SmellType.MESSAGE_CHAINS, line: 35 }
+        ]
+      }
+    }
+  })
 
   console.log("🌱 Seed executado com sucesso!")
   console.log(`📚 ${await prisma.exercise.count()} exercícios criados`)
