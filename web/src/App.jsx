@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 import Home from './pages/Home';
 import Layout from './components/Layout';
@@ -9,10 +10,30 @@ import FarejadorDetail from './pages/Farejador/[id]';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
+import { trackPageView } from './services/AnalyticsService';
+
+function AnalyticsPageTracker() {
+    const location = useLocation();
+    const lastTrackedPath = useRef('');
+
+    useEffect(() => {
+        const pagePath = `${location.pathname}${location.search}${location.hash}`;
+
+        if (pagePath === lastTrackedPath.current) {
+            return;
+        }
+
+        lastTrackedPath.current = pagePath;
+        trackPageView(pagePath);
+    }, [location]);
+
+    return null;
+}
 
 export default function App() {
     return (
         <Router>
+            <AnalyticsPageTracker />
             <Layout>
                 <Routes>
                     <Route path="/" element={<Home />} />
