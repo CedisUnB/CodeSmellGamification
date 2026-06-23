@@ -8,26 +8,23 @@ const api = axios.create({
 });
 
 export const ApiService = (token) => {
-    if (token) {
-        api.interceptors.request.use((config) => {
-            config.headers.Authorization = `Bearer ${token}`;
-            return config;
-        });
-    }
+    const authConfig = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : undefined;
 
     return {
         anonymousLogin: (sessionId) => api.post('/user/anonymous', sessionId),
         login: (user) => api.post('/user/login', user),
         register: (user) => api.post('/user/register', user),
 
-        getMe: () => api.get('/user/me'),
-        addCoins: (amount) => api.post('/user/coin', amount),
+        getMe: () => api.get('/user/me', authConfig),
+        addCoins: (amount) => api.post('/user/coin', amount, authConfig),
 
-        getExercises: () => api.get('/exercise'),
-        getExerciseById: (id) => api.get(`/exercise/${id}`),
-        getTip: (id, tipNumber) => api.get(`/exercise/${id}/tip?tipNumber=${tipNumber}`),
-        getStatistics: (id) => api.get(`/exercise/${id}/statistics`),
+        getExercises: () => api.get('/exercise', authConfig),
+        getExerciseById: (id) => api.get(`/exercise/${id}`, authConfig),
+        getTip: (id, tipNumber) => api.get(`/exercise/${id}/tip?tipNumber=${tipNumber}`, authConfig),
+        getStatistics: (id) => api.get(`/exercise/${id}/statistics`, authConfig),
 
-        makeAttempt: (id, attempt) => api.post(`/exercise/${id}/attempt`, attempt),
+        makeAttempt: (id, attempt) => api.post(`/exercise/${id}/attempt`, attempt, authConfig),
     };
 };
