@@ -18,7 +18,7 @@ export const ApiService = (token) => {
         register: (user) => api.post('/user/register', user),
 
         getMe: () => api.get('/user/me', authConfig),
-        addCoins: (amount) => api.post('/user/coin', amount, authConfig),
+        addCoins: () => api.post('/user/coin', undefined, authConfig),
 
         getExercises: () => api.get('/exercise', authConfig),
         getExerciseById: (id) => api.get(`/exercise/${id}`, authConfig),

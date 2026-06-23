@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken'
-import { comparePassword, hashPassword } from '../utils/password.js'
+import { comparePassword, hashPassword, passwordNeedsRehash } from '../utils/password.js'
 
 const prisma = new PrismaClient()
 
@@ -35,17 +35,25 @@ class LoginController {
     }
 
     async login(request, response) {
-        const { email, password, sessionId } = request.body
+        const { password, sessionId } = request.body
+        const email = request.body.email.trim().toLowerCase()
 
         try {
             const user = await prisma.user.findUnique({ where: { email } })
-            if (!user) {
-                return response.status(404).json({ error: 'Usuário não encontrado' })
+            if (!user || !user.password) {
+                return response.status(401).json({ error: 'Credenciais inválidas' })
             }
 
             const match = await comparePassword(password, user.password)
             if (!match) {
-                return response.status(401).json({ error: 'Senha invalida' })
+                return response.status(401).json({ error: 'Credenciais inválidas' })
+            }
+
+            if (passwordNeedsRehash(user.password)) {
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { password: await hashPassword(password) }
+                })
             }
 
             let transferInfo = null
@@ -101,7 +109,9 @@ class LoginController {
     }
 
     async register(request, response) {
-        const { name, email, password, sessionId } = request.body
+        const { password, sessionId } = request.body
+        const name = request.body.name.trim()
+        const email = request.body.email.trim().toLowerCase()
 
         const existingUser = await prisma.user.findUnique({
             where: { email }

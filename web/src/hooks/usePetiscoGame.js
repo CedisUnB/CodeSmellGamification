@@ -12,7 +12,7 @@ export const usePetiscoGame = () => {
     const addCoins = async () => {
         const { addCoins } = ApiService(token);
         try {
-            const response = await addCoins({ coins: 1 });
+            const response = await addCoins();
             updateUser(response.data);
             return response.data;
         } catch (error) {
